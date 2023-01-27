@@ -280,7 +280,6 @@ public class CTMgr : MonoBehaviour
     public void AddRotateOnPath(Vector3 mousepos)
     {
         selectedOrder.rot = mousepos;
-        Debug.Log("fj");
       
     }
 
@@ -305,9 +304,10 @@ public class CTMgr : MonoBehaviour
             }
             if (temp.rot != default)
             {
-                Vector3 dir = temp.rot - this.transform.position;
+                transform.LookAt(temp.rot);
+                //Vector3 dir = temp.rot - this.transform.position;
 
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 10);
+                //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 10);
             }
             if (temp.flash)
             {
