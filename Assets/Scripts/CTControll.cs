@@ -39,6 +39,13 @@ public class CTControll : MonoBehaviour
         clickingtime += Time.deltaTime;
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+        if(Physics.Raycast(ray,out hit) && (hit.collider.transform.CompareTag("Player")||hit.collider.transform.CompareTag("Path")||hit.collider.transform.CompareTag("Order")))
+        {
+            if (hit.collider.transform.CompareTag("Order"))
+            {
+
+            }
+        }
         if (Input.GetMouseButton(1))
         {
             if (Physics.Raycast(ray, out hit) && hit.collider.transform.CompareTag("Player"))
