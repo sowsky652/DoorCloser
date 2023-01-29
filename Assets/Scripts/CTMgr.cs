@@ -65,7 +65,7 @@ public class CTMgr : MonoBehaviour
     public MeshFilter viewMeshFilter;
 
     private Order selectedOrder;
-
+    Animator animator;
     void Start()
     {
         circle.SetActive(false);
@@ -80,6 +80,9 @@ public class CTMgr : MonoBehaviour
         viewMeshFilter.mesh = viewMesh;
 
         StartCoroutine(FindTargetsWithDelay(0.2f));
+
+         animator = GetComponentInChildren<Animator>();
+
     }
     IEnumerator FindTargetsWithDelay(float delay)
     {
@@ -189,7 +192,7 @@ public class CTMgr : MonoBehaviour
     void FindVisibleTargets()
     {
         visibleTargets.Clear();
-        // viewRadius¸¦ ¹ÝÁö¸§À¸·Î ÇÑ ¿ø ¿µ¿ª ³» targetMask ·¹ÀÌ¾îÀÎ ÄÝ¶óÀÌ´õ¸¦ ¸ðµÎ °¡Á®¿È
+        // viewRadiusï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ targetMask ï¿½ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
 
         for (int i = 0; i < targetsInViewRadius.Length; i++)
@@ -197,12 +200,12 @@ public class CTMgr : MonoBehaviour
             Transform target = targetsInViewRadius[i].transform;
             Vector3 dirToTarget = (target.position - transform.position).normalized;
 
-            // ÇÃ·¹ÀÌ¾î¿Í forward¿Í targetÀÌ ÀÌ·ç´Â °¢ÀÌ ¼³Á¤ÇÑ °¢µµ ³»¶ó¸é
+            // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ forwardï¿½ï¿½ targetï¿½ï¿½ ï¿½Ì·ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
             if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
             {
                 float dstToTarget = Vector3.Distance(transform.position, target.transform.position);
 
-                // Å¸°ÙÀ¸·Î °¡´Â ·¹ÀÌÄ³½ºÆ®¿¡ obstacleMask°¡ °É¸®Áö ¾ÊÀ¸¸é visibleTargets¿¡ Add
+                // Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Æ®ï¿½ï¿½ obstacleMaskï¿½ï¿½ ï¿½É¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ visibleTargetsï¿½ï¿½ Add
                 if (!Physics.Raycast(transform.position, dirToTarget, dstToTarget, obstacleMask))
                 {
                     visibleTargets.Add(target);
@@ -238,7 +241,7 @@ public class CTMgr : MonoBehaviour
         {
             lastpos.transform.position = fixlastpos;
         }
-        else if (isEditing && lastpos.active)
+        else if (isEditing && destinaition.Count>=1)
         {
             lastpos.transform.position = destinaition.Last();
         }
@@ -249,6 +252,7 @@ public class CTMgr : MonoBehaviour
             curDestination = destinaition.Dequeue();
             agent.SetDestination(curDestination);
             arrived = false;
+            animator.SetBool("isRunning", true);
         }
         else if (Vector3.Distance(curDestination, transform.position) < 1f)
         {
@@ -258,12 +262,14 @@ public class CTMgr : MonoBehaviour
             line.SetPositions(array);
             arrived = true;
             curDestination = default;
+
         }
 
         if (arrived && destinaition.Count <= 0)
         {
             curDestination = default;
             lastpos.SetActive(false);
+            animator.SetBool("isRunning", false);
 
         }
     }
@@ -344,7 +350,8 @@ public class CTMgr : MonoBehaviour
         OnPoint();
         isEditing = true;
         circle.SetActive(true);
-        lastpos.SetActive(true);
+
+        //lastpos.SetActive(true);
 
     }
 

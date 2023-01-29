@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CTControll : MonoBehaviour
 {
@@ -38,13 +40,40 @@ public class CTControll : MonoBehaviour
     {
         clickingtime += Time.deltaTime;
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        if(Physics.Raycast(ray,out hit) && (hit.collider.transform.CompareTag("Player")||hit.collider.transform.CompareTag("Path")||hit.collider.transform.CompareTag("Order")))
+        if (clikedplayer != null&&!drag&&!rotdrag)
         {
-            if (hit.collider.transform.CompareTag("Order"))
+            if (Physics.Raycast(ray, out hit) && hit.collider.gameObject.GetComponent<CTMgr>() != clikedplayer)
             {
-
+                clikedplayer.ClickDisable();
+                clikedplayer = null;
             }
+        }
+
+        if (Physics.Raycast(ray, out hit) && (hit.collider.transform.CompareTag("Player") || hit.collider.transform.CompareTag("Path") || hit.collider.transform.CompareTag("Order")))
+        {
+            if (!drag && !rotdrag)
+            {
+                if (clikedplayer != null)
+                {
+                    clikedplayer.ClickDisable();
+                }
+
+                if (hit.collider.transform.CompareTag("Player"))
+                {
+                    clikedplayer = hit.collider.gameObject.GetComponent<CTMgr>();
+                }
+                else if (hit.collider.transform.CompareTag("Path"))
+                {
+                    clikedplayer = hit.collider.gameObject.GetComponent<ObjectPath>().ct;
+                }
+                else if (hit.collider.transform.CompareTag("Order"))
+                {
+                    clikedplayer = hit.collider.gameObject.GetComponent<Order>().ct;
+                }
+
+                clikedplayer.OnClick();
+            }
+
         }
         if (Input.GetMouseButton(1))
         {
@@ -57,8 +86,6 @@ public class CTControll : MonoBehaviour
                         clikedplayer.ClickDisable();
                     }
                     clikedplayer = hit.collider.gameObject.GetComponent<CTMgr>();
-                    //  clikedplayer.OnClick();
-                    clikedplayer.OnPoint();
                     clikedplayer.Roatating = true;
                 }
 
@@ -74,11 +101,11 @@ public class CTControll : MonoBehaviour
                     }
                     clikedplayer = hit.collider.gameObject.GetComponent<ObjectPath>().ct;
                     clikedplayer.MakeOrder(hit.point);
-                    
+
                 }
             }
 
-            if(Physics.Raycast(ray, out hit) && hit.collider.transform.CompareTag("Order"))
+            if (Physics.Raycast(ray, out hit) && hit.collider.transform.CompareTag("Order"))
             {
                 if (clikedplayer != null)
                 {
@@ -158,11 +185,9 @@ public class CTControll : MonoBehaviour
             {
                 drag = false;
                 clikedplayer.MakeLastPos();
+                clikedplayer.ClickDisable();
             }
         }
 
-        //if (Input.GetMouseButtonDown(1)&&)
-        //{
-        //}
     }
 }
