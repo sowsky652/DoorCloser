@@ -10,7 +10,7 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
-public class CTMgr : MonoBehaviour
+public class CTMgr : MonoBehaviour,IShooter
 {
     public struct ViewCastInfo
     {
@@ -41,15 +41,17 @@ public class CTMgr : MonoBehaviour
         }
     }
 
-
+    public GunStat gun;
     Queue<Vector3> destinaition;
     NavMeshAgent agent;
+    float agentspeed;
     public Order order;
     public LineRenderer lineprefeb;
     LineRenderer line;
     Vector3 fixlastpos;
     public GameObject circle;
     public GameObject lastpos;
+    public GameObject attackTarget;
     private bool arrived = true;
     Vector3 curDestination;
     private bool isEditing = false;
@@ -66,6 +68,8 @@ public class CTMgr : MonoBehaviour
 
     private Order selectedOrder;
     Animator animator;
+    Vector3 bookedrot;
+
     void Start()
     {
         circle.SetActive(false);
@@ -78,10 +82,11 @@ public class CTMgr : MonoBehaviour
         viewMesh = new Mesh();
         viewMesh.name = "View Mesh";
         viewMeshFilter.mesh = viewMesh;
-
+        agentspeed = agent.speed;
+        Debug.Log(agent.speed);
         StartCoroutine(FindTargetsWithDelay(0.2f));
 
-         animator = GetComponentInChildren<Animator>();
+        animator = GetComponentInChildren<Animator>();
 
     }
     IEnumerator FindTargetsWithDelay(float delay)
@@ -138,7 +143,21 @@ public class CTMgr : MonoBehaviour
     }
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (GameManager.instance.IsStop())
+            {
+                Resume();
+                GameManager.instance.GameStop(false);
+            }
+            else
+            {
+                Stop();
+                GameManager.instance.GameStop(true);
 
+            }
+
+        }
         Move();
         MakelineMesh();
     }
@@ -147,6 +166,32 @@ public class CTMgr : MonoBehaviour
     {
         DrawFieldOfView();
     }
+
+    public void Resume()
+    {
+        animator.SetFloat("Speed", 1);
+        // agent.isStopped = false;
+        SetRotate(bookedrot);
+        bookedrot = default;
+        agent.enabled = true;
+        if (curDestination != null)
+            agent.SetDestination(curDestination);
+
+    }
+    public void Stop()
+    {
+
+        animator.SetFloat("Speed", 0);
+        agent.enabled = false;
+    }
+
+    public void BookedRotation(Vector3 mousepos)
+    {
+        var dir = (mousepos - transform.position).magnitude;
+        bookedrot = new Vector3(mousepos.x, mousepos.y + 0.1f, mousepos.z);
+
+    }
+
     void MakelineMesh()
     {
         if (line.positionCount > 1)
@@ -176,11 +221,45 @@ public class CTMgr : MonoBehaviour
         }
     }
 
+    public void EditPath(Vector3 mousepos)
+    {
+        Vector3 near;
+
+        int count = 0, index = 0;
+        float min = 0;
+        near = destinaition.First();
+        foreach (var temp in destinaition)
+        {
+            if (Vector3.Distance(temp, mousepos) < Vector3.Distance(mousepos, near))
+            {
+                near = temp;
+                index = count;
+                min = Vector3.Distance(temp, mousepos);
+            }
+            ++count;
+        }
+
+        Queue<Vector3> newQ = new Queue<Vector3>();
+
+        for (int i = 0; i < index; ++i)
+        {
+            newQ.Enqueue(destinaition.Dequeue());
+        }
+        destinaition = newQ;
+
+        AddDestination(mousepos);
+        lastpos.transform.position = mousepos;
+
+        var array = destinaition.ToArray();
+        line.positionCount = array.Length;
+        line.SetPositions(array);
+    }
+
     public void ClearOrder()
     {
         GameObject[] temp = GameObject.FindGameObjectsWithTag("Order");
-       
-        foreach(var GO in temp)
+
+        foreach (var GO in temp)
         {
             if (GO.GetComponent<Order>().ct == this)
             {
@@ -188,6 +267,7 @@ public class CTMgr : MonoBehaviour
             }
         }
     }
+
 
     void FindVisibleTargets()
     {
@@ -200,11 +280,16 @@ public class CTMgr : MonoBehaviour
             Transform target = targetsInViewRadius[i].transform;
             Vector3 dirToTarget = (target.position - transform.position).normalized;
 
+            if (LayerMask.NameToLayer("Enemy") == target.gameObject.layer&&attackTarget==null)
+            {
+                attackTarget = target.gameObject;
+                Debug.Log(attackTarget.name);
+            }
             // �÷��̾�� forward�� target�� �̷�� ���� ������ ���� �����
             if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
             {
                 float dstToTarget = Vector3.Distance(transform.position, target.transform.position);
-
+                
                 // Ÿ������ ���� ����ĳ��Ʈ�� obstacleMask�� �ɸ��� ������ visibleTargets�� Add
                 if (!Physics.Raycast(transform.position, dirToTarget, dstToTarget, obstacleMask))
                 {
@@ -241,14 +326,14 @@ public class CTMgr : MonoBehaviour
         {
             lastpos.transform.position = fixlastpos;
         }
-        else if (isEditing && destinaition.Count>=1)
+        else if (isEditing && destinaition.Count >= 1)
         {
             lastpos.transform.position = destinaition.Last();
         }
-            
+
 
         if (arrived && destinaition.Count > 0)
-        { 
+        {
             curDestination = destinaition.Dequeue();
             agent.SetDestination(curDestination);
             arrived = false;
@@ -257,7 +342,6 @@ public class CTMgr : MonoBehaviour
         else if (Vector3.Distance(curDestination, transform.position) < 1f)
         {
             var array = destinaition.ToArray();
-
             line.positionCount = array.Length;
             line.SetPositions(array);
             arrived = true;
@@ -286,7 +370,7 @@ public class CTMgr : MonoBehaviour
     public void AddRotateOnPath(Vector3 mousepos)
     {
         selectedOrder.rot = mousepos;
-      
+
     }
 
     public void SetSeletedOrder(Order order)
@@ -296,7 +380,7 @@ public class CTMgr : MonoBehaviour
 
     public void MakeOrder(Vector3 meshpoint)
     {
-        var temp=Instantiate(order, meshpoint, Quaternion.identity);
+        var temp = Instantiate(order, meshpoint, Quaternion.identity);
         temp.ct = this;
     }
 

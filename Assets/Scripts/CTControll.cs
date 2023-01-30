@@ -40,7 +40,7 @@ public class CTControll : MonoBehaviour
     {
         clickingtime += Time.deltaTime;
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (clikedplayer != null&&!drag&&!rotdrag)
+        if (clikedplayer != null && (!drag && !rotdrag))
         {
             if (Physics.Raycast(ray, out hit) && hit.collider.gameObject.GetComponent<CTMgr>() != clikedplayer)
             {
@@ -87,6 +87,7 @@ public class CTControll : MonoBehaviour
                     }
                     clikedplayer = hit.collider.gameObject.GetComponent<CTMgr>();
                     clikedplayer.Roatating = true;
+                    rotdrag = true;
                 }
 
             }
@@ -120,7 +121,10 @@ public class CTControll : MonoBehaviour
             if (clikedplayer != null &&
                 Physics.Raycast(ray, out hit) && hit.collider.transform.CompareTag("Floor"))
             {
-                clikedplayer.SetRotate(hit.point);
+                if (!GameManager.instance.IsStop())
+                    clikedplayer.SetRotate(hit.point);
+                else
+                    clikedplayer.BookedRotation(hit.point);
             }
         }
 
@@ -131,14 +135,17 @@ public class CTControll : MonoBehaviour
                 clikedplayer.AddRotateOnPath(hit.point);
                 clikedplayer.ClickDisable();
                 clikedplayer = null;
-                rotdrag = false;
             }
+            rotdrag = false;
+
         }
 
         if (Input.GetMouseButtonUp(1) && clikedplayer != null)
         {
             if (clikedplayer.Roatating)
             {
+                rotdrag = false;
+
                 clikedplayer.Roatating = false;
             }
         }
@@ -161,6 +168,13 @@ public class CTControll : MonoBehaviour
                     clikedplayer.ClearOrder();
                     drag = true;
 
+                }
+
+                if (hit.collider.transform.CompareTag("Path"))
+                {
+                    clikedplayer.EditPath(hit.point);
+                    IncreasePath(clikedplayer.gameObject.transform.Find("LastPos").gameObject);
+                    drag = true;
                 }
 
             }
