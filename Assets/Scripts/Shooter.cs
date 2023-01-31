@@ -6,6 +6,6 @@ using UnityEngine;
 public class Shooter
 {
     Stats stat;
-    void Shoot();   
+   // void Shoot();   
     
 }

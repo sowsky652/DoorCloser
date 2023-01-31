@@ -10,7 +10,7 @@ using UnityEngine.AI;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
-public class CTMgr : MonoBehaviour,IShooter
+public class CTMgr : MonoBehaviour
 {
     public struct ViewCastInfo
     {
