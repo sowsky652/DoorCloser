@@ -197,7 +197,7 @@ public class CTControll : MonoBehaviour
             }
 
         }
-
+        
         if (Input.GetMouseButtonUp(0))
         {
             if (Physics.Raycast(ray, out hit) && (hit.collider.gameObject.CompareTag("Floor") || hit.collider.gameObject.CompareTag("Path")))
