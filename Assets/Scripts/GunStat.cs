@@ -7,10 +7,10 @@ public class GunStat : ScriptableObject
 {
     public AudioClip shotClip;
     public AudioClip reloadClip;
-    public float damage;
+    public int damage;
     public float shotdelay;
     public int magCapacity;
-    public int reloadTime;
+    public float reloadTime;
     public int magReamning;
    
 }

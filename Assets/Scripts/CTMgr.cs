@@ -161,6 +161,8 @@ public class CTMgr : MonoBehaviour
         }
         Move();
         MakelineMesh();
+
+
     }
 
     void LateUpdate()
@@ -218,7 +220,8 @@ public class CTMgr : MonoBehaviour
         Handles.color = Color.red;
         foreach (Transform visible in visibleTargets)
         {
-            Handles.DrawLine(transform.position, visible.transform.position);
+            if (visible != null)
+                Handles.DrawLine(transform.position, visible.transform.position);
         }
     }
 
@@ -314,6 +317,7 @@ public class CTMgr : MonoBehaviour
                         shooter.attackTarget = r;
                     }
                 }
+                shooter.OnShoot();
             }
         }
 
@@ -321,8 +325,8 @@ public class CTMgr : MonoBehaviour
         {
             transform.LookAt(shooter.attackTarget.transform);
             //  transform.rotation.SetEulerAngles(new Vector3(transform.rotation.x, transform.rotation.y + 0.1f, transform.rotation.z));
-          
-        }      
+
+        }
 
     }
 

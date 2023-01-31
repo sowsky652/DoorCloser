@@ -6,18 +6,37 @@ using UnityEngine;
 public class Shooter : MonoBehaviour
 {
     public GameObject attackTarget { get; set; }
-    public GunStat gun;
+    public GunStat gunstat;
     bool isReload;
+    public Animator animator;
+    public bool isAlive { get; set; }
+    private int hp { get; set; }
+
     private void Update()
     {
-        if (attackTarget != null)
-        {
-            StartCoroutine(Shoot());
+        if (hp <= 0) {
+            //place regdoll and Destory gameobject
         }
         if (attackTarget == null)
         {
-            StopCoroutine(Shoot());
+            StopCoroutine("Shoot");
         }
+    }
+
+    public void OnShoot()
+    {
+        StartCoroutine("Shoot");
+    }
+
+    public void OnDamage(int damage)
+    {
+        hp -= damage;
+        
+    }
+
+    public void StopShoot()
+    {
+        StopCoroutine("Shoot");
     }
 
     void Reload()
@@ -27,22 +46,24 @@ public class Shooter : MonoBehaviour
 
     public void Fire()
     {
-        --gun.magReamning;
+        --gunstat.magReamning;
+        animator.SetTrigger("Fire");
     }
 
     IEnumerator Shoot()
     {
         while (true)
         {
-            if (gun.magReamning < 0)
-            {                
-                if (!isReload)
-                {
-                    Reload();
-                }                
-            }
+            //if (gun.magReamning < 0)
+            //{                
+            //    if (!isReload)
+            //    {
+            //        Reload();
+            //    }                
+            //}
             Fire();
-            yield return new WaitForSeconds(gun.shotdelay);
+            Debug.Log("shoot!!!!");
+            yield return new WaitForSeconds(gunstat.shotdelay);
 
         }
     }

@@ -12,7 +12,6 @@ public class CTControll : MonoBehaviour
     private CTMgr clikedplayer;
     private bool drag;
     private bool rotdrag;
-    private float clickingtime = 0;
     private Vector3 clickedpostemp;
     // Start is called before the first frame update
     void Start()
@@ -161,8 +160,6 @@ public class CTControll : MonoBehaviour
         {
             if (Input.GetMouseButtonDown(0) && Physics.Raycast(ray, out hit))
             {
-                clickingtime = 0;
-
                 if (hit.collider.transform.CompareTag("Player"))
                 {
                     if (clikedplayer != null)
@@ -180,7 +177,8 @@ public class CTControll : MonoBehaviour
                 if (hit.collider.transform.CompareTag("Path"))
                 {
                     clikedplayer.EditPath(hit.point);
-                    IncreasePath(clikedplayer.gameObject.transform.Find("LastPos").gameObject);
+                    
+                     IncreasePath(clikedplayer.gameObject.transform.Find("LastPos").gameObject);
                     drag = true;
                 }
 
@@ -209,7 +207,6 @@ public class CTControll : MonoBehaviour
                 if (clikedplayer != null)
                 {
                     clikedplayer.MakeLastPos();
-                    Debug.Log("!");
                     clikedplayer.ClickDisable();
                 }
             }
