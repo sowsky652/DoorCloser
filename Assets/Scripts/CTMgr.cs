@@ -41,7 +41,6 @@ public class CTMgr : MonoBehaviour
         }
     }
 
-    public GunStat gun;
     Queue<Vector3> destinaition;
     NavMeshAgent agent;
     float agentspeed;
@@ -51,7 +50,7 @@ public class CTMgr : MonoBehaviour
     Vector3 fixlastpos;
     public GameObject circle;
     public GameObject lastpos;
-    public GameObject attackTarget;
+    private Shooter shooter;
     private bool arrived = true;
     Vector3 curDestination;
     private bool isEditing = false;
@@ -83,12 +82,14 @@ public class CTMgr : MonoBehaviour
         viewMesh.name = "View Mesh";
         viewMeshFilter.mesh = viewMesh;
         agentspeed = agent.speed;
-        Debug.Log(agent.speed);
         StartCoroutine(FindTargetsWithDelay(0.2f));
 
         animator = GetComponentInChildren<Animator>();
 
+        shooter = GetComponent<Shooter>();
+
     }
+
     IEnumerator FindTargetsWithDelay(float delay)
     {
         while (true)
@@ -274,29 +275,55 @@ public class CTMgr : MonoBehaviour
         visibleTargets.Clear();
         // viewRadius�� ���������� �� �� ���� �� targetMask ���̾��� �ݶ��̴��� ��� ������
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
-
+        List<GameObject> listofenemy = new List<GameObject>();
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
             Transform target = targetsInViewRadius[i].transform;
             Vector3 dirToTarget = (target.position - transform.position).normalized;
 
-            if (LayerMask.NameToLayer("Enemy") == target.gameObject.layer&&attackTarget==null)
-            {
-                attackTarget = target.gameObject;
-                Debug.Log(attackTarget.name);
-            }
             // �÷��̾�� forward�� target�� �̷�� ���� ������ ���� �����
             if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
             {
                 float dstToTarget = Vector3.Distance(transform.position, target.transform.position);
-                
+
                 // Ÿ������ ���� ����ĳ��Ʈ�� obstacleMask�� �ɸ��� ������ visibleTargets�� Add
                 if (!Physics.Raycast(transform.position, dirToTarget, dstToTarget, obstacleMask))
                 {
                     visibleTargets.Add(target);
+                    if (LayerMask.NameToLayer("Enemy") == target.gameObject.layer && shooter.attackTarget == null)
+                    {
+                        listofenemy.Add(target.gameObject);
+                    }
                 }
             }
         }
+        if (shooter.attackTarget == null)
+        {
+            if (listofenemy.Count == 0)
+            {
+                shooter.attackTarget = null;
+            }
+            else
+            {
+                float shortest = Vector3.Distance(transform.position, listofenemy[0].transform.position);
+                shooter.attackTarget = listofenemy[0];
+                foreach (var r in listofenemy)
+                {
+                    if (shortest > Vector3.Distance(transform.position, r.transform.position))
+                    {
+                        shooter.attackTarget = r;
+                    }
+                }
+            }
+        }
+
+        if (shooter.attackTarget != null)
+        {
+            transform.LookAt(shooter.attackTarget.transform);
+            //  transform.rotation.SetEulerAngles(new Vector3(transform.rotation.x, transform.rotation.y + 0.1f, transform.rotation.z));
+          
+        }      
+
     }
 
     public void Resetorder()
@@ -312,11 +339,14 @@ public class CTMgr : MonoBehaviour
 
     public void MakeLastPos()
     {
-        lastpos.SetActive(true);
-        fixlastpos = destinaition.Last();
-        lastpos.transform.position = destinaition.Last();
-        lastpos.GetComponent<RectTransform>().localScale = new Vector3(0.5f, 0.5f, 0.5f);
-        isEditing = false;
+        if (destinaition.Count != 0)
+        {
+            lastpos.SetActive(true);
+            fixlastpos = destinaition.Last();
+            lastpos.transform.position = destinaition.Last();
+            lastpos.GetComponent<RectTransform>().localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            isEditing = false;
+        }
     }
 
     private void Move()
@@ -369,8 +399,8 @@ public class CTMgr : MonoBehaviour
 
     public void AddRotateOnPath(Vector3 mousepos)
     {
-        selectedOrder.rot = mousepos;
-
+        if (selectedOrder != null)
+            selectedOrder.rot = mousepos;
     }
 
     public void SetSeletedOrder(Order order)
@@ -386,6 +416,9 @@ public class CTMgr : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
+
+        if (other.gameObject.name == "Path(Clone)")
+            return;
         if (other.gameObject.GetComponent<Order>().ct == this)
         {
             var temp = other.gameObject.GetComponent<Order>();
@@ -453,7 +486,7 @@ public class CTMgr : MonoBehaviour
         if (lastpos.active)
         {
             lastpos.GetComponent<Image>().color = new Color(1, 1, 1, 0.36f);
-            line.SetWidth(0.05f, 0.05f);
+            line.SetWidth(0.1f, 0.1f);
         }
     }
 

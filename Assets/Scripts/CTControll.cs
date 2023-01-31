@@ -38,7 +38,6 @@ public class CTControll : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        clickingtime += Time.deltaTime;
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (clikedplayer != null && (!drag && !rotdrag))
         {
@@ -108,35 +107,43 @@ public class CTControll : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit) && hit.collider.transform.CompareTag("Order"))
             {
-                if (clikedplayer != null)
+                if (Input.GetMouseButtonDown(1))
                 {
-                    clikedplayer.ClickDisable();
+                    if (clikedplayer != null)
+                    {
+                        clikedplayer.ClickDisable();
+                    }
+                    clikedplayer = hit.collider.gameObject.GetComponent<Order>().ct;
+                    clikedplayer.SetSeletedOrder(hit.collider.gameObject.GetComponent<Order>());
+                    clickedpostemp = hit.point;
+                    rotdrag = true;
                 }
-                clikedplayer = hit.collider.gameObject.GetComponent<Order>().ct;
-                clikedplayer.SetSeletedOrder(hit.collider.gameObject.GetComponent<Order>());
-                clickedpostemp = hit.point;
-                rotdrag = true;
             }
 
             if (clikedplayer != null &&
                 Physics.Raycast(ray, out hit) && hit.collider.transform.CompareTag("Floor"))
             {
-                if (!GameManager.instance.IsStop())
+                if (!GameManager.instance.IsStop() && rotdrag)
                     clikedplayer.SetRotate(hit.point);
                 else
                     clikedplayer.BookedRotation(hit.point);
             }
         }
 
-        if (rotdrag && Input.GetMouseButtonUp(1))
+        if (Input.GetMouseButtonUp(1))
         {
             if (Physics.Raycast(ray, out hit) && hit.collider.transform.CompareTag("Floor"))
             {
-                clikedplayer.AddRotateOnPath(hit.point);
-                clikedplayer.ClickDisable();
-                clikedplayer = null;
+                if (clikedplayer != null)
+                {
+                    clikedplayer.AddRotateOnPath(hit.point);
+                    clikedplayer.ClickDisable();
+                    clikedplayer = null;
+                }
             }
             rotdrag = false;
+            if (clikedplayer != null)
+                clikedplayer.Roatating = false;
 
         }
 
@@ -193,13 +200,22 @@ public class CTControll : MonoBehaviour
 
         }
 
-        if (drag && Input.GetMouseButtonUp(0))
+        if (Input.GetMouseButtonUp(0))
         {
-            if (Physics.Raycast(ray, out hit) && hit.collider.gameObject.CompareTag("Floor"))
+            if (Physics.Raycast(ray, out hit) && (hit.collider.gameObject.CompareTag("Floor") || hit.collider.gameObject.CompareTag("Path")))
             {
+
                 drag = false;
-                clikedplayer.MakeLastPos();
-                clikedplayer.ClickDisable();
+                if (clikedplayer != null)
+                {
+                    clikedplayer.MakeLastPos();
+                    Debug.Log("!");
+                    clikedplayer.ClickDisable();
+                }
+            }
+            else if (Physics.Raycast(ray, out hit))
+            {
+                Debug.Log(hit.collider.gameObject.name);
             }
         }
 

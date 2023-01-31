@@ -58,5 +58,13 @@ public class GameManager : MonoBehaviour
                 BroadcastMessage("Resume", SendMessageOptions.DontRequireReceiver);
 
         }
+
+        if(Input.GetAxis("Mouse ScrollWheel") > 0)
+        {
+            Camera.main.fieldOfView -= 1;
+        }else if(Input.GetAxis("Mouse ScrollWheel") < 0)
+        {
+            Camera.main.fieldOfView += 1;
+        }
     }
 }
