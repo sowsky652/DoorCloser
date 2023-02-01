@@ -162,7 +162,11 @@ public class CTMgr : MonoBehaviour
         Move();
         MakelineMesh();
 
-
+        if (shooter.attackTarget != null)
+        {
+            transform.LookAt(shooter.attackTarget.gameObject.transform.position);
+           // transform.rotation = Quaternion.EulerRotation(new Vector3(0, shooter.attackTarget.transform.position.y));
+        }
     }
 
     void LateUpdate()
@@ -300,6 +304,11 @@ public class CTMgr : MonoBehaviour
                 }
             }
         }
+        if (listofenemy.Count == 0)
+        {
+            shooter.attackTarget = null;
+        }
+
         if (shooter.attackTarget == null)
         {
             if (listofenemy.Count == 0)
@@ -321,12 +330,8 @@ public class CTMgr : MonoBehaviour
             }
         }
 
-        if (shooter.attackTarget != null)
-        {
-            transform.LookAt(shooter.attackTarget.transform);
-            //  transform.rotation.SetEulerAngles(new Vector3(transform.rotation.x, transform.rotation.y + 0.1f, transform.rotation.z));
+        
 
-        }
 
     }
 
@@ -470,7 +475,7 @@ public class CTMgr : MonoBehaviour
     {
         OnPoint();
         isEditing = true;
-        circle.SetActive(true);
+       
 
         //lastpos.SetActive(true);
 
@@ -481,7 +486,7 @@ public class CTMgr : MonoBehaviour
         lastpos.GetComponent<Image>().color = new Color(1, 1, 1, 1f);
         line.material.color = new Color(line.material.color.r, line.material.color.g, line.material.color.b, 255);
         line.SetWidth(0.2f, 0.2f);
-
+        circle.SetActive(true);
     }
 
     public void ClickDisable()
