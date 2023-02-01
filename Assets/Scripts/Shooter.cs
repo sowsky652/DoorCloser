@@ -9,12 +9,14 @@ public class Shooter : MonoBehaviour
     public GunStat gunstat;
     bool isReload;
     public Animator animator;
+    public ParticleSystem muzzleFlash;
     public bool isAlive { get; set; }
     private int hp { get; set; }
 
     private void Update()
     {
-        if (hp <= 0) {
+        if (hp <= 0)
+        {
             //place regdoll and Destory gameobject
         }
         if (attackTarget == null)
@@ -31,7 +33,7 @@ public class Shooter : MonoBehaviour
     public void OnDamage(int damage)
     {
         hp -= damage;
-        
+
     }
 
     public void StopShoot()
@@ -41,30 +43,40 @@ public class Shooter : MonoBehaviour
 
     void Reload()
     {
-        isReload = true;        
+        isReload = true;
+        StartCoroutine("ReLoading");
     }
 
     public void Fire()
     {
         --gunstat.magReamning;
         animator.SetTrigger("Fire");
+        muzzleFlash.Play();
     }
 
+    //IEnumerator ReLoading()
+    //{
+    //    yield return new WaitForSeconds(gunstat.reloadTime);
+    //    isReload = false;
+    //    //gunstat.magReamning=gunstat.;
+    //        yield return 0;
+    //}
     IEnumerator Shoot()
     {
         while (true)
         {
-            //if (gun.magReamning < 0)
-            //{                
+            //if (gunstat.magReamning <= 0)
+            //{
             //    if (!isReload)
             //    {
             //        Reload();
-            //    }                
+            //    }
             //}
-            Fire();
-            Debug.Log("shoot!!!!");
+            if (!isReload)
+            {
+                Fire();
+            }
             yield return new WaitForSeconds(gunstat.shotdelay);
-
         }
     }
 

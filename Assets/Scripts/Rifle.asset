@@ -15,7 +15,7 @@ MonoBehaviour:
   shotClip: {fileID: 0}
   reloadClip: {fileID: 0}
   damage: 0
-  shotdelay: 0
+  shotdelay: 1.8
   magCapacity: 0
   reloadTime: 0
-  magReamning: 0
+  magReamning: -6
