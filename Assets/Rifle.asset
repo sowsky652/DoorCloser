@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shotClip: {fileID: 0}
   reloadClip: {fileID: 0}
-  damage: 4
+  damage: 8
   shotdelay: 0.8
   reloadTime: 1.5

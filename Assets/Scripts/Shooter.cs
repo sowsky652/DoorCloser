@@ -18,23 +18,25 @@ public class Shooter : MonoBehaviour
     [Header("ÃÑ Á¤º¸")]
     public List<guns> gunList;
     bool isReload;
+    bool isSwaping;
+    public float swapSpeed;
+    public float swaping;
     private int curGun;
     public Animator animator;
     public ParticleSystem muzzleFlash;
     public GameObject activeSlider;
     public bool isAlive { get; set; }
-    private int hp { get; set; }
+    public int hp;
     private float reloadtime;
 
     private void Start()
     {
-        
     }
     private void Update()
     {
         if (hp <= 0)
         {
-            //place regdoll and Destory gameobject
+            Destroy(gameObject);
         }
         if (attackTarget == null)
         {
@@ -45,8 +47,41 @@ public class Shooter : MonoBehaviour
             reloadtime += Time.deltaTime;
             activeSlider.GetComponent<Slider>().value = reloadtime / gunList[curGun].gun.reloadTime;
 
-        }        
+        }
+        if (isSwaping && swapSpeed > swaping)
+        {
+            swaping += Time.deltaTime;
+            activeSlider.GetComponent<Slider>().value= swaping / swapSpeed;
+        }
 
+        
+
+    }
+
+    public void Swap()
+    {
+        isSwaping= true;
+        StopCoroutine("Swop");
+        StopCoroutine("ReLoading");
+        StopCoroutine("Shoot");
+        StartCoroutine("Swop");
+      
+    }
+
+    IEnumerator Swop()
+    {
+        activeSlider.SetActive(true);
+        swaping = 0;
+        yield return new WaitForSeconds(swapSpeed);
+        if (curGun == 0)
+            curGun = 1;
+        else
+            curGun = 0;
+        isSwaping = false;
+        activeSlider.GetComponent<Slider>().value = 0;
+
+        activeSlider.SetActive(false);
+        yield break;
     }
 
     public void OnShoot()
@@ -65,16 +100,17 @@ public class Shooter : MonoBehaviour
         StopCoroutine("Shoot");
     }
 
-    void Reload()
+    public void Reload()
     {
+        StopCoroutine("ReLoading");
         isReload = true;
+        reloadtime = 0;
         StartCoroutine("ReLoading");
     }
 
     public void Fire()
     {
         gunList[curGun].mag[gunList[curGun].curmag] -= 1;
-        //animator.SetTrigger("Fire");
         muzzleFlash.Play();
     }
 
@@ -85,7 +121,7 @@ public class Shooter : MonoBehaviour
         yield return new WaitForSeconds(gunList[curGun].gun.reloadTime);
         isReload = false;
         gunList[curGun].curmag++;
-        if (gunList[curGun].curmag >= gunList[curGun].mag[gunList[curGun].curmag])
+        if (gunList[curGun].curmag >= gunList[curGun].mag.Count)
         {
             gunList[curGun].curmag = 0;
         }
@@ -109,7 +145,11 @@ public class Shooter : MonoBehaviour
             if (!isReload)
             {
                 Fire();
-                Debug.Log(gunList[curGun].mag[gunList[curGun].curmag]);
+                var temp=GameManager.instance.GetBullet();
+                temp.SetDamage(gunList[curGun].gun.damage);
+                temp.transform.position= muzzleFlash.transform.position;
+                temp.transform.LookAt(transform.position);
+                temp.transform.gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * 100,ForceMode.Impulse);
 
             }
             yield return new WaitForSeconds(gunList[curGun].gun.shotdelay);

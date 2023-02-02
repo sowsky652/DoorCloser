@@ -8,6 +8,7 @@ TagManager:
   - LastPos
   - Path
   - Order
+  - Enemy
   layers:
   - Default
   - TransparentFX

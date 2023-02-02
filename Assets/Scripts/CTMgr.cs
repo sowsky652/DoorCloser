@@ -402,12 +402,16 @@ public class CTMgr : MonoBehaviour
         if (Roatating && Vector3.Distance(mousepos, transform.position) > 2f)
         {
             var dir = (mousepos - transform.position).magnitude;
-            transform.LookAt(new Vector3(mousepos.x, mousepos.y + 0.1f, mousepos.z));
+            transform.LookAt(new Vector3(mousepos.x,transform.position.y+0.1f, mousepos.z));
         }
     }
 
     public void AddRotateOnPath(Vector3 mousepos)
     {
+        if (selectedOrder == null)
+        {
+            Debug.Log("selectedOrder is null");
+        }
         if (selectedOrder != null)
             selectedOrder.rot = mousepos;
     }
@@ -421,6 +425,7 @@ public class CTMgr : MonoBehaviour
     {
         var temp = Instantiate(order, meshpoint, Quaternion.identity);
         temp.ct = this;
+        selectedOrder = temp;
     }
 
     public void OnTriggerEnter(Collider other)
@@ -433,6 +438,7 @@ public class CTMgr : MonoBehaviour
             var temp = other.gameObject.GetComponent<Order>();
             if (temp.reload)
             {
+                shooter.Reload();
             }
             if (temp.rot != default)
             {
@@ -444,6 +450,10 @@ public class CTMgr : MonoBehaviour
             if (temp.flash)
             {
 
+            }
+            if (temp.swap)
+            {
+                shooter.Swap();
             }
 
 
