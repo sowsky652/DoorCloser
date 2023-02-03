@@ -12,34 +12,34 @@ using static UnityEngine.GraphicsBuffer;
 
 public class CTMgr : MonoBehaviour
 {
-    public struct ViewCastInfo
-    {
-        public bool hit;
-        public Vector3 point;
-        public float dst;
-        public float angle;
+    //public struct ViewCastInfo
+    //{
+    //    public bool hit;
+    //    public Vector3 point;
+    //    public float dst;
+    //    public float angle;
 
-        public ViewCastInfo(bool _hit, Vector3 _point, float _dst, float _angle)
-        {
-            hit = _hit;
-            point = _point;
-            dst = _dst;
-            angle = _angle;
-        }
-    }
-    ViewCastInfo ViewCast(float globalAngle)
-    {
-        Vector3 dir = DirFromAngle(globalAngle, true);
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, dir, out hit, viewRadius, obstacleMask))
-        {
-            return new ViewCastInfo(true, hit.point, hit.distance, globalAngle);
-        }
-        else
-        {
-            return new ViewCastInfo(false, transform.position + dir * viewRadius, viewRadius, globalAngle);
-        }
-    }
+    //    public ViewCastInfo(bool _hit, Vector3 _point, float _dst, float _angle)
+    //    {
+    //        hit = _hit;
+    //        point = _point;
+    //        dst = _dst;
+    //        angle = _angle;
+    //    }
+    //}
+    //ViewCastInfo ViewCast(float globalAngle)
+    //{
+    //    Vector3 dir = DirFromAngle(globalAngle, true);
+    //    RaycastHit hit;
+    //    if (Physics.Raycast(transform.position, dir, out hit, viewRadius, obstacleMask))
+    //    {
+    //        return new ViewCastInfo(true, hit.point, hit.distance, globalAngle);
+    //    }
+    //    else
+    //    {
+    //        return new ViewCastInfo(false, transform.position + dir * viewRadius, viewRadius, globalAngle);
+    //    }
+    //}
 
     Queue<Vector3> destinaition;
     NavMeshAgent agent;
@@ -54,16 +54,16 @@ public class CTMgr : MonoBehaviour
     private bool arrived = true;
     Vector3 curDestination;
     private bool isEditing = false;
-    public float meshResolution;
-    public float viewRadius;
-    [Range(0, 360), Serialize]
-    public float viewAngle;
-    public LayerMask targetMask, obstacleMask;
+   // public float meshResolution;
+    //public float viewRadius;
+    //[Range(0, 360), Serialize]
+    //public float viewAngle;
+    //public LayerMask targetMask, obstacleMask;
     public bool Roatating { set; get; }
-    public List<Transform> visibleTargets = new List<Transform>();
+   // public List<Transform> visibleTargets = new List<Transform>();
 
-    Mesh viewMesh;
-    public MeshFilter viewMeshFilter;
+    //Mesh viewMesh;
+    //public MeshFilter viewMeshFilter;
 
     private Order selectedOrder;
     Animator animator;
@@ -78,11 +78,11 @@ public class CTMgr : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         destinaition = new Queue<Vector3>();
         // lineBakedMesh = new Mesh();
-        viewMesh = new Mesh();
-        viewMesh.name = "View Mesh";
-        viewMeshFilter.mesh = viewMesh;
+        //viewMesh = new Mesh();
+        //viewMesh.name = "View Mesh";
+        //viewMeshFilter.mesh = viewMesh;
         agentspeed = agent.speed;
-        StartCoroutine(FindTargetsWithDelay(0.2f));
+        //StartCoroutine(FindTargetsWithDelay(0.2f));
 
         animator = GetComponentInChildren<Animator>();
 
@@ -90,14 +90,14 @@ public class CTMgr : MonoBehaviour
 
     }
 
-    IEnumerator FindTargetsWithDelay(float delay)
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(delay);
-            FindVisibleTargets();
-        }
-    }
+    //IEnumerator FindTargetsWithDelay(float delay)
+    //{
+    //    while (true)
+    //    {
+    //        yield return new WaitForSeconds(delay);
+    //        FindVisibleTargets();
+    //    }
+    //}
     public Vector3 DirFromAngle(float angleDegrees, bool angleIsGlobal)
     {
         if (!angleIsGlobal)
@@ -108,40 +108,40 @@ public class CTMgr : MonoBehaviour
         return new Vector3(Mathf.Cos((-angleDegrees + 90) * Mathf.Deg2Rad), 0, Mathf.Sin((-angleDegrees + 90) * Mathf.Deg2Rad));
     }
 
-    void DrawFieldOfView()
-    {
-        int stepCount = Mathf.RoundToInt(viewAngle * meshResolution);
-        float stepAngleSize = viewAngle / stepCount;
-        List<Vector3> viewPoints = new List<Vector3>();
+    //void DrawFieldOfView()
+    //{
+    //    int stepCount = Mathf.RoundToInt(viewAngle * meshResolution);
+    //    float stepAngleSize = viewAngle / stepCount;
+    //    List<Vector3> viewPoints = new List<Vector3>();
 
-        for (int i = 0; i <= stepCount; i++)
-        {
-            float angle = transform.eulerAngles.y - viewAngle / 2 + stepAngleSize * i;
+    //    for (int i = 0; i <= stepCount; i++)
+    //    {
+    //        float angle = transform.eulerAngles.y - viewAngle / 2 + stepAngleSize * i;
 
-            ViewCastInfo newViewCast = ViewCast(angle);
-            viewPoints.Add(newViewCast.point);
-        }
+    //        ViewCastInfo newViewCast = ViewCast(angle);
+    //        viewPoints.Add(newViewCast.point);
+    //    }
 
-        int vertexCount = viewPoints.Count + 1;
-        Vector3[] vertices = new Vector3[vertexCount];
-        int[] triangles = new int[(vertexCount - 2) * 3];
-        vertices[0] = Vector3.zero;
+    //    int vertexCount = viewPoints.Count + 1;
+    //    Vector3[] vertices = new Vector3[vertexCount];
+    //    int[] triangles = new int[(vertexCount - 2) * 3];
+    //    vertices[0] = Vector3.zero;
 
-        for (int i = 0; i < vertexCount - 1; i++)
-        {
-            vertices[i + 1] = transform.InverseTransformPoint(viewPoints[i]);
-            if (i < vertexCount - 2)
-            {
-                triangles[i * 3] = 0;
-                triangles[i * 3 + 1] = i + 1;
-                triangles[i * 3 + 2] = i + 2;
-            }
-        }
-        viewMesh.Clear();
-        viewMesh.vertices = vertices;
-        viewMesh.triangles = triangles;
-        viewMesh.RecalculateNormals();
-    }
+    //    for (int i = 0; i < vertexCount - 1; i++)
+    //    {
+    //        vertices[i + 1] = transform.InverseTransformPoint(viewPoints[i]);
+    //        if (i < vertexCount - 2)
+    //        {
+    //            triangles[i * 3] = 0;
+    //            triangles[i * 3 + 1] = i + 1;
+    //            triangles[i * 3 + 2] = i + 2;
+    //        }
+    //    }
+    //    viewMesh.Clear();
+    //    viewMesh.vertices = vertices;
+    //    viewMesh.triangles = triangles;
+    //    viewMesh.RecalculateNormals();
+    //}
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -162,16 +162,16 @@ public class CTMgr : MonoBehaviour
         Move();
         MakelineMesh();
 
-        if (shooter.attackTarget != null)
-        {
-            transform.LookAt(shooter.attackTarget.gameObject.transform.position);
-           // transform.rotation = Quaternion.EulerRotation(new Vector3(0, shooter.attackTarget.transform.position.y));
-        }
+        //if (shooter.attackTarget != null)
+        //{
+        //    transform.LookAt(shooter.attackTarget.gameObject.transform.position);
+        //    // transform.rotation = Quaternion.EulerRotation(new Vector3(0, shooter.attackTarget.transform.position.y));
+        //}
     }
 
     void LateUpdate()
     {
-        DrawFieldOfView();
+       // DrawFieldOfView();
     }
 
     public void Resume()
@@ -210,24 +210,24 @@ public class CTMgr : MonoBehaviour
             //line.GetComponent<MeshCollider>().isTrigger = true;
         }
     }
-    private void OnDrawGizmos()
-    {
+    //private void OnDrawGizmos()
+    //{
 
-        Handles.color = Color.white;
-        Handles.DrawWireArc(transform.position, Vector3.up, Vector3.forward, 360, viewRadius);
-        Vector3 viewAngleA = DirFromAngle(-viewAngle / 2, false);
-        Vector3 viewAngleB = DirFromAngle(viewAngle / 2, false);
+    //    Handles.color = Color.white;
+    //    Handles.DrawWireArc(transform.position, Vector3.up, Vector3.forward, 360, viewRadius);
+    //    Vector3 viewAngleA = DirFromAngle(-viewAngle / 2, false);
+    //    Vector3 viewAngleB = DirFromAngle(viewAngle / 2, false);
 
-        Handles.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
-        Handles.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
+    //    Handles.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
+    //    Handles.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
 
-        Handles.color = Color.red;
-        foreach (Transform visible in visibleTargets)
-        {
-            if (visible != null)
-                Handles.DrawLine(transform.position, visible.transform.position);
-        }
-    }
+    //    Handles.color = Color.red;
+    //    foreach (Transform visible in visibleTargets)
+    //    {
+    //        if (visible != null)
+    //            Handles.DrawLine(transform.position, visible.transform.position);
+    //    }
+    //}
 
     public void EditPath(Vector3 mousepos)
     {
@@ -277,63 +277,59 @@ public class CTMgr : MonoBehaviour
     }
 
 
-    void FindVisibleTargets()
-    {
-        visibleTargets.Clear();
-        // viewRadius�� ���������� �� �� ���� �� targetMask ���̾��� �ݶ��̴��� ��� ������
-        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
-        List<GameObject> listofenemy = new List<GameObject>();
-        for (int i = 0; i < targetsInViewRadius.Length; i++)
-        {
-            Transform target = targetsInViewRadius[i].transform;
-            Vector3 dirToTarget = (target.position - transform.position).normalized;
+    //void FindVisibleTargets()
+    //{
+    //    visibleTargets.Clear();
+    //    // viewRadius�� ���������� �� �� ���� �� targetMask ���̾��� �ݶ��̴��� ��� ������
+    //    Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, viewRadius, targetMask);
+    //    List<GameObject> listofenemy = new List<GameObject>();
+    //    for (int i = 0; i < targetsInViewRadius.Length; i++)
+    //    {
+    //        Transform target = targetsInViewRadius[i].transform;
+    //        Vector3 dirToTarget = (target.position - transform.position).normalized;
 
-            // �÷��̾�� forward�� target�� �̷�� ���� ������ ���� �����
-            if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
-            {
-                float dstToTarget = Vector3.Distance(transform.position, target.transform.position);
+    //        // �÷��̾�� forward�� target�� �̷�� ���� ������ ���� �����
+    //        if (Vector3.Angle(transform.forward, dirToTarget) < viewAngle / 2)
+    //        {
+    //            float dstToTarget = Vector3.Distance(transform.position, target.transform.position);
 
-                // Ÿ������ ���� ����ĳ��Ʈ�� obstacleMask�� �ɸ��� ������ visibleTargets�� Add
-                if (!Physics.Raycast(transform.position, dirToTarget, dstToTarget, obstacleMask))
-                {
-                    visibleTargets.Add(target);
-                    if (LayerMask.NameToLayer("Enemy") == target.gameObject.layer && shooter.attackTarget == null)
-                    {
-                        listofenemy.Add(target.gameObject);
-                    }
-                }
-            }
-        }
-        if (listofenemy.Count == 0)
-        {
-            shooter.attackTarget = null;
-        }
+    //            // Ÿ������ ���� ����ĳ��Ʈ�� obstacleMask�� �ɸ��� ������ visibleTargets�� Add
+    //            if (!Physics.Raycast(transform.position, dirToTarget, dstToTarget, obstacleMask))
+    //            {
+    //                visibleTargets.Add(target);
+    //                if (LayerMask.NameToLayer("Enemy") == target.gameObject.layer && shooter.attackTarget == null)
+    //                {
+    //                    listofenemy.Add(target.gameObject);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    if (listofenemy.Count == 0)
+    //    {
+    //        shooter.attackTarget = null;
+    //    }
 
-        if (shooter.attackTarget == null)
-        {
-            if (listofenemy.Count == 0)
-            {
-                shooter.attackTarget = null;
-            }
-            else
-            {
-                float shortest = Vector3.Distance(transform.position, listofenemy[0].transform.position);
-                shooter.attackTarget = listofenemy[0];
-                foreach (var r in listofenemy)
-                {
-                    if (shortest > Vector3.Distance(transform.position, r.transform.position))
-                    {
-                        shooter.attackTarget = r;
-                    }
-                }
-                shooter.OnShoot();
-            }
-        }
-
-        
-
-
-    }
+    //    if (shooter.attackTarget == null)
+    //    {
+    //        if (listofenemy.Count == 0)
+    //        {
+    //            shooter.attackTarget = null;
+    //        }
+    //        else
+    //        {
+    //            float shortest = Vector3.Distance(transform.position, listofenemy[0].transform.position);
+    //            shooter.attackTarget = listofenemy[0];
+    //            foreach (var r in listofenemy)
+    //            {
+    //                if (shortest > Vector3.Distance(transform.position, r.transform.position))
+    //                {
+    //                    shooter.attackTarget = r;
+    //                }
+    //            }
+    //            shooter.OnShoot();
+    //        }
+    //    }
+    //}
 
     public void Resetorder()
     {
@@ -428,38 +424,7 @@ public class CTMgr : MonoBehaviour
         selectedOrder = temp;
     }
 
-    public void OnTriggerEnter(Collider other)
-    {
-
-        if (other.gameObject.name == "Path(Clone)")
-            return;
-        if (other.gameObject.GetComponent<Order>().ct == this)
-        {
-            var temp = other.gameObject.GetComponent<Order>();
-            if (temp.reload)
-            {
-                shooter.Reload();
-            }
-            if (temp.rot != default)
-            {
-                transform.LookAt(temp.rot);
-                //Vector3 dir = temp.rot - this.transform.position;
-
-                //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 10);
-            }
-            if (temp.flash)
-            {
-
-            }
-            if (temp.swap)
-            {
-                shooter.Swap();
-            }
-
-
-            Destroy(other.gameObject);
-        }
-    }
+   
 
 
     public bool DistanceFromLastdestinaition(Vector3 mousepos)
@@ -514,5 +479,36 @@ public class CTMgr : MonoBehaviour
 
     }
 
+    public void OnTriggerEnter(Collider other)
+    {
 
+        if (other.gameObject.name == "Path(Clone)" && other.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+            return;
+        if (other.gameObject.GetComponent<Order>().ct == this)
+        {
+            var temp = other.gameObject.GetComponent<Order>();
+            if (temp.reload)
+            {
+                shooter.Reload();
+            }
+            if (temp.rot != default)
+            {
+                transform.LookAt(temp.rot);
+                //Vector3 dir = temp.rot - this.transform.position;
+
+                //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), Time.deltaTime * 10);
+            }
+            if (temp.flash)
+            {
+
+            }
+            if (temp.swap)
+            {
+                shooter.Swap();
+            }
+
+
+            Destroy(other.gameObject);
+        }
+    }
 }

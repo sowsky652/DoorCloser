@@ -52,12 +52,9 @@ public class Shooter : MonoBehaviour
         {
             swaping += Time.deltaTime;
             activeSlider.GetComponent<Slider>().value= swaping / swapSpeed;
-        }
-
-        
+        }        
 
     }
-
     public void Swap()
     {
         isSwaping= true;
@@ -149,7 +146,7 @@ public class Shooter : MonoBehaviour
                 temp.SetDamage(gunList[curGun].gun.damage);
                 temp.transform.position= muzzleFlash.transform.position;
                 temp.transform.LookAt(transform.position);
-                temp.transform.gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * 100,ForceMode.Impulse);
+                temp.transform.gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * 10,ForceMode.Impulse);
 
             }
             yield return new WaitForSeconds(gunList[curGun].gun.shotdelay);

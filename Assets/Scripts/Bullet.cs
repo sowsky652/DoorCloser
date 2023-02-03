@@ -37,10 +37,12 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("hit");
         if (other.gameObject.layer == LayerMask.NameToLayer("Enemy")||other.gameObject.tag=="Player") {
 
             if (other.transform.GetComponent<Shooter>() != null)
             {
+
                 other.transform.GetComponent<Shooter>().OnDamage(dmg);
             }
 
