@@ -8,7 +8,7 @@ using UnityEngine.Pool;
 public class GameManager : MonoBehaviour
 {
     bool Stop { get; set; }
-    private static GameManager m_instance; // ½Ì±ÛÅæÀÌ ÇÒ´çµÉ static º¯¼ö
+    private static GameManager m_instance; // ï¿½Ì±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ò´ï¿½ï¿½ static ï¿½ï¿½ï¿½ï¿½
     delegate void pause();
     public Bullet bulletPrefab;
     private IObjectPool<Bullet> bullet;
@@ -40,19 +40,19 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            // ¸¸¾à ½Ì±ÛÅæ º¯¼ö¿¡ ¾ÆÁ÷ ¿ÀºêÁ§Æ®°¡ ÇÒ´çµÇÁö ¾Ê¾Ò´Ù¸é
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½Ì±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ò´ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò´Ù¸ï¿½
             if (m_instance == null)
             {
-                // ¾À¿¡¼­ GameManager ¿ÀºêÁ§Æ®¸¦ Ã£¾Æ ÇÒ´ç
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ GameManager ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½Ò´ï¿½
                 m_instance = FindObjectOfType<GameManager>();
             }
 
-            // ½Ì±ÛÅæ ¿ÀºêÁ§Æ®¸¦ ¹ÝÈ¯
+            // ï¿½Ì±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½È¯
             return m_instance;
         }
     }
 
-  
+
 
     public void GameStop(bool value)
     {
@@ -67,17 +67,32 @@ public class GameManager : MonoBehaviour
     {
         bullet = new ObjectPool<Bullet>(InstantiateObject, OnObject, OnReleased);
 
-        // ¾À¿¡ ½Ì±ÛÅæ ¿ÀºêÁ§Æ®°¡ µÈ ´Ù¸¥ GameManager ¿ÀºêÁ§Æ®°¡ ÀÖ´Ù¸é
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ì±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù¸ï¿½ GameManager ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö´Ù¸ï¿½
         if (instance != this)
         {
-            // ÀÚ½ÅÀ» ÆÄ±«
+            // ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½Ä±ï¿½
             Destroy(gameObject);
         }
     }
+    public void MakeNoise(GameObject noiseMaker, float radius)
+    {
+        Collider[] colls = Physics.OverlapSphere(noiseMaker.transform.position, radius);
 
+        foreach (var coll in colls)
+        {
+
+            if (coll.tag != noiseMaker.transform.tag &&
+                coll.GetComponent<Shooter>() != null)
+            {
+                if (coll.GetComponent<Shooter>().Status == Status.Idle)
+                    coll.transform.LookAt(noiseMaker.transform.position);
+            }
+        }
+
+    }
     public Bullet GetBullet()
     {
-       return bullet.Get();
+        return bullet.Get();
 
     }
 
@@ -93,10 +108,11 @@ public class GameManager : MonoBehaviour
 
         }
 
-        if(Input.GetAxis("Mouse ScrollWheel") > 0)
+        if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
             Camera.main.fieldOfView -= 1;
-        }else if(Input.GetAxis("Mouse ScrollWheel") < 0)
+        }
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0)
         {
             Camera.main.fieldOfView += 1;
         }

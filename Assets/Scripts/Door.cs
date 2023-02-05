@@ -25,6 +25,10 @@ public class Door : MonoBehaviour
         {
             open = true;
             transform.rotation = Quaternion.Euler(originRot + new Vector3(0, 90,0));
+            if (other.transform.tag == "Player"||other.transform.tag=="Enemy")
+            {
+                GameManager.instance.MakeNoise(other.gameObject, 10f);
+            }
         }
     }
 }

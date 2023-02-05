@@ -4,6 +4,8 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using UnityEditor;
+
 public class Shooter : MonoBehaviour
 {
     [Serializable]
@@ -14,8 +16,12 @@ public class Shooter : MonoBehaviour
         public int curmag;
     }
 
+    Status status;
+
+    public Status Status { get { return status; } set { status = value; } }
+
     public GameObject attackTarget { get; set; }
-    [Header("ÃÑ Á¤º¸")]
+    [Header("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     public List<guns> gunList;
     bool isReload;
     bool isSwaping;
@@ -29,8 +35,11 @@ public class Shooter : MonoBehaviour
     public int hp;
     private float reloadtime;
 
+
     private void Start()
     {
+        status = Status.Idle;
+
     }
     private void Update()
     {
@@ -41,6 +50,7 @@ public class Shooter : MonoBehaviour
         if (attackTarget == null)
         {
             StopCoroutine("Shoot");
+            status = Status.Idle;
         }
         if (isReload && gunList[curGun].gun.reloadTime > reloadtime)
         {
@@ -127,6 +137,7 @@ public class Shooter : MonoBehaviour
         activeSlider.SetActive(false);
         yield break;
     }
+   
     IEnumerator Shoot()
     {
         while (true)
@@ -145,8 +156,10 @@ public class Shooter : MonoBehaviour
                 var temp=GameManager.instance.GetBullet();
                 temp.SetDamage(gunList[curGun].gun.damage);
                 temp.transform.position= muzzleFlash.transform.position;
-                temp.transform.LookAt(transform.position);
-                temp.transform.gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * 10,ForceMode.Impulse);
+                temp.transform.LookAt(attackTarget.transform.position);
+                temp.transform.rotation= muzzleFlash.transform.rotation;
+                temp.transform.gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * 1,ForceMode.Impulse);
+                temp.Owner = transform.gameObject;
 
             }
             yield return new WaitForSeconds(gunList[curGun].gun.shotdelay);

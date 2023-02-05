@@ -2,12 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyMgr : MonoBehaviour
+public class Noise : MonoBehaviour
 {
-
-    private void Start()
-    {
-    }
-
-    
+   
 }
