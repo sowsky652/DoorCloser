@@ -85,7 +85,10 @@ public class GameManager : MonoBehaviour
                 coll.GetComponent<Shooter>() != null)
             {
                 if (coll.GetComponent<Shooter>().Status == Status.Idle)
+                {
                     coll.transform.LookAt(noiseMaker.transform.position);
+                    coll.GetComponent<Shooter>().Status = Status.Fight;  
+                }
             }
         }
 

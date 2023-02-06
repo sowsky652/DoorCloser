@@ -228,6 +228,11 @@ public class CTMgr : MonoBehaviour
             curDestination = default;
             lastpos.SetActive(false);
             animator.SetBool("isRunning", false);
+            animator.SetFloat("Speed", 0);
+        }
+        else
+        {
+            animator.SetFloat("Speed", 1);
 
         }
     }

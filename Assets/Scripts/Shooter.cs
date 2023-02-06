@@ -18,7 +18,7 @@ public class Shooter : MonoBehaviour
 
     Status status;
 
-    public Status Status { get { return status; } set { status = value; } }
+    public Status Status { get { return status; } set { status = value; Debug.Log(status); } }
 
     public GameObject attackTarget { get; set; }
     [Header("�� ����")]
@@ -34,7 +34,8 @@ public class Shooter : MonoBehaviour
     public bool isAlive { get; set; }
     public int hp;
     private float reloadtime;
-
+    public Transform muzzlePos;
+    public float accuracy = 0.1f;
 
     private void Start()
     {
@@ -45,6 +46,7 @@ public class Shooter : MonoBehaviour
     {
         if (hp <= 0)
         {
+            Debug.Log($"{gameObject.name} dead");
             Destroy(gameObject);
         }
         if (attackTarget == null)
@@ -61,18 +63,19 @@ public class Shooter : MonoBehaviour
         if (isSwaping && swapSpeed > swaping)
         {
             swaping += Time.deltaTime;
-            activeSlider.GetComponent<Slider>().value= swaping / swapSpeed;
-        }        
+            activeSlider.GetComponent<Slider>().value = swaping / swapSpeed;
+        }
 
     }
+
     public void Swap()
     {
-        isSwaping= true;
+        isSwaping = true;
         StopCoroutine("Swop");
         StopCoroutine("ReLoading");
         StopCoroutine("Shoot");
         StartCoroutine("Swop");
-      
+
     }
 
     IEnumerator Swop()
@@ -98,6 +101,7 @@ public class Shooter : MonoBehaviour
 
     public void OnDamage(int damage)
     {
+        Debug.Log($"{transform.name}has Damage({hp})");
         hp -= damage;
 
     }
@@ -117,8 +121,30 @@ public class Shooter : MonoBehaviour
 
     public void Fire()
     {
+        if (gunList[curGun].mag[gunList[curGun].curmag] <= 0)
+        {
+            if (!isReload)
+            {
+                Reload();
+            }
+        }
+        if (isReload)
+        {
+            return;
+        }
+
         gunList[curGun].mag[gunList[curGun].curmag] -= 1;
         muzzleFlash.Play();
+        var temp = GameManager.instance.GetBullet();
+        temp.SetDamage(gunList[curGun].gun.damage);
+        temp.transform.position = muzzlePos.transform.position;
+        float x= UnityEngine.Random.Range(-accuracy, accuracy);
+        float y= UnityEngine.Random.Range(-accuracy, accuracy);
+        temp.transform.rotation =muzzlePos.transform.rotation;
+        temp.transform.Rotate(new Vector3(x, y, 0));
+        temp.transform.gameObject.GetComponent<Rigidbody>().AddForce(temp.transform.forward * 40, ForceMode.Impulse);
+        Debug.Log($"{temp.transform.rotation}");
+        temp.Owner = transform.gameObject;
     }
 
     IEnumerator ReLoading()
@@ -137,31 +163,15 @@ public class Shooter : MonoBehaviour
         activeSlider.SetActive(false);
         yield break;
     }
-   
+
     IEnumerator Shoot()
     {
         while (true)
         {
+            Debug.Log(gunList[curGun].mag[gunList[curGun].curmag]);
 
-            if (gunList[curGun].mag[gunList[curGun].curmag] <= 0)
-            {
-                if (!isReload)
-                {
-                    Reload();
-                }
-            }
-            if (!isReload)
-            {
-                Fire();
-                var temp=GameManager.instance.GetBullet();
-                temp.SetDamage(gunList[curGun].gun.damage);
-                temp.transform.position= muzzleFlash.transform.position;
-                temp.transform.LookAt(attackTarget.transform.position);
-                temp.transform.rotation= muzzleFlash.transform.rotation;
-                temp.transform.gameObject.GetComponent<Rigidbody>().AddForce(transform.forward * 1,ForceMode.Impulse);
-                temp.Owner = transform.gameObject;
+            Fire();
 
-            }
             yield return new WaitForSeconds(gunList[curGun].gun.shotdelay);
         }
     }

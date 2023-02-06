@@ -145,7 +145,7 @@ GameObject:
   - component: {fileID: 1053159524}
   - component: {fileID: 1053159522}
   - component: {fileID: 1053159523}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13715,6 +13715,7 @@ MonoBehaviour:
   muzzleFlash: {fileID: 3184160297161012022}
   activeSlider: {fileID: 6811606646148095953}
   hp: 10
+  muzzlePos: {fileID: 5409968831213210810}
 --- !u!114 &1043500206
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14917,7 +14918,7 @@ GameObject:
   - component: {fileID: 7434746061229049674}
   m_Layer: 0
   m_Name: Gun
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

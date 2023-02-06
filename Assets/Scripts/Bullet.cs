@@ -10,7 +10,6 @@ public class Bullet : MonoBehaviour
     private IObjectPool<Bullet> objectPool;
     private int dmg;
     Vector3 lastpos;
-    private GameObject owner;
 
     public GameObject Owner { set; get; }
 
@@ -20,42 +19,53 @@ public class Bullet : MonoBehaviour
     }
     private void OnEnable()
     {
-        //   StartCoroutine("DeleteBullet");
+        StartCoroutine("DeleteBullet");
         lastpos = transform.position;
+        transform.rotation= Quaternion.identity;
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        GameManager.instance.MakeNoise(Owner,20);
     }
 
     private void OnDrawGizmos()
     {
         Handles.color = Color.green;
 
-        Handles.DrawLine(transform.position, transform.forward*1000);
+        Handles.DrawLine(lastpos, transform.position);
 
     }
 
     private void FixedUpdate()
     {
-        Vector3 dir = lastpos- transform.position;
-        RaycastHit hit;
-        if(Owner==null)
+        if (Owner == null)
+        {
+
             objectPool.Release(this);
 
-        if (Physics.Raycast(Owner.transform.position, transform.position, out hit))
+        }
+        Vector3 dir = (lastpos - transform.position).normalized;
+        RaycastHit hit;
+        
+        if (Physics.Raycast(lastpos, dir, out hit, Vector3.Distance(lastpos,transform.position)))
         {
-            if (hit.collider.gameObject.tag=="Enemy" || hit.collider.gameObject.tag == "Player"|| hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+            if (hit.collider.gameObject.tag == "Enemy" || hit.collider.gameObject.tag == "Player" || hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
             {
-                
-                Debug.Log(hit.collider.tag);
-                Debug.Log(Owner.tag);
-                Debug.Log("\n");
+                if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+                {
+                    objectPool.Release(this);
+
+                }
                 if (hit.transform.GetComponent<Shooter>() != null &&
                 hit.transform.tag != Owner.tag)
                 {
-
+                    Debug.Log($"hit:{hit.collider.tag}");
+                    Debug.Log($"owner:{Owner.tag}");
+                    Debug.Log("\n");
                     hit.transform.GetComponent<Shooter>().OnDamage(dmg);
+                    objectPool.Release(this);
+
                 }
 
 
-                objectPool.Release(this);
             }
         }
         lastpos = transform.position;
@@ -77,11 +87,13 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Enemy") || other.gameObject.tag == "Player")
+        
+        if (other.gameObject.tag == "Enemy" || other.gameObject.tag == "Player")
         {
-            Debug.Log("hit");
+            Debug.Log($"{other.gameObject.name}hit");
+            Debug.Log($"isnull?{other.transform.GetComponent<Shooter>()}");
             if (other.transform.GetComponent<Shooter>() != null &&
-                other.tag != owner.tag)
+                other.tag != Owner.tag)
             {
 
                 other.transform.GetComponent<Shooter>().OnDamage(dmg);

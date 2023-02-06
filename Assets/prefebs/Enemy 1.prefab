@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 444299791}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.22, y: 1.661, z: 0.3}
+  m_LocalPosition: {x: 0.15, y: 1.661, z: -0.12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -512,6 +512,7 @@ GameObject:
   - component: {fileID: 554031426}
   - component: {fileID: 554031431}
   - component: {fileID: 3747635021217692418}
+  - component: {fileID: 9028489742136926241}
   m_Layer: 6
   m_Name: Enemy 1
   m_TagString: Enemy
@@ -556,9 +557,11 @@ MonoBehaviour:
   swapSpeed: 2.13
   swaping: 0
   animator: {fileID: 0}
-  muzzleFlash: {fileID: 198000012944515248, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
+  muzzleFlash: {fileID: 3218176443053542039}
   activeSlider: {fileID: 1658733542}
   hp: 10
+  muzzlePos: {fileID: 5006343827961149621}
+  accuracy: 0.1
 --- !u!136 &7705505190032168249
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -567,12 +570,12 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9111518468018023715}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
+  m_Radius: 0.52702296
   m_Height: 2.0561445
   m_Direction: 1
-  m_Center: {x: 0, y: 0.98038447, z: 0}
+  m_Center: {x: 0, y: 0.98038447, z: 0.027022973}
 --- !u!54 &3547237839394348355
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -585,7 +588,7 @@ Rigidbody:
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -613,7 +616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f506448791f143545a46ffb606dd639e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewRadius: 9.36
+  viewRadius: 12.42
   viewAngle: 61
   targetMask:
     serializedVersion: 2
@@ -638,6 +641,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c47e4ee080cc59244964906da7fad9d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!195 &9028489742136926241
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9111518468018023715}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1001 &3320891918265100839
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -699,6 +724,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
+--- !u!198 &3218176443053542039 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 198000012944515248, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
+  m_PrefabInstance: {fileID: 3320891918265100839}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3321431559703419805 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000011227296186, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
@@ -787,6 +817,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7041715655133696394, guid: 3a5cfad998d1ff94f821b4b4cb238451, type: 3}
+      propertyPath: m_TagString
+      value: Enemy
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 372909100427274035, guid: 3a5cfad998d1ff94f821b4b4cb238451, type: 3}
     - {fileID: 372909100427274060, guid: 3a5cfad998d1ff94f821b4b4cb238451, type: 3}
@@ -861,7 +895,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1500639974793993218, guid: 957152901355268429702d53d16a40ff, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.87
       objectReference: {fileID: 0}
     - target: {fileID: 1500639974793993218, guid: 957152901355268429702d53d16a40ff, type: 3}
       propertyPath: m_LocalRotation.w
