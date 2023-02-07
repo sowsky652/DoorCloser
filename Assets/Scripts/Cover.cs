@@ -4,36 +4,53 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class Cover : MonoBehaviour
-{
+{       
     Bounds bounds;
-    Transform left;
-    Transform right;
-    Transform upper;
-    Transform lower;
-    
+    List<Vector3> coverPos=new List<Vector3>();
+    Vector3 left;
+    Vector3 right;
+    Vector3 upper;
+    Vector3 lower;
+
     private void Start()
     {
-        
-        bounds=GetComponent<MeshCollider>().bounds;
-       
-        left= new Vector3(bounds.min.x-10,0,bounds.center.z);
-        right = new Vector3(bounds.max.x - 10, 0, bounds.center.z);
-        
-        upper = new Vector3(bounds.center.x, 0,bounds.max.z + 10);
-        lower = new Vector3(bounds.center.x, 0, bounds.min.z - 10);
+        bounds = GetComponent<MeshCollider>().bounds;
+
+        coverPos.Add(new Vector3(bounds.min.x - 0.5f, 0, bounds.center.z));
+        coverPos.Add(new Vector3(bounds.max.x - 0.5f, 0, bounds.center.z));
+        coverPos.Add(new Vector3(bounds.center.x, 0, bounds.max.z + 0.5f));
+        coverPos.Add(new Vector3(bounds.center.x, 0, bounds.min.z - 0.5f));
     }
 
     private void Update()
     {
+
     }
 
-    public List<Vector3> FindCover(GameObject opponent)
+
+    //private void OnDrawGizmos()
+    //{
+    //    rend = GetComponent<Renderer>();
+    //    Vector3 center = left;
+
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireCube(center, rend.bounds.size);
+    //}
+
+    public Vector3 FindCover(GameObject opponent)
     {
         RaycastHit hit;
-        if (Physics.Raycast(opponent.transform.position, left - opponent.transform.position, out hit, Vector3.Distance(left, transform.position)))
-        {
+        List<Vector3> cover;
 
+        foreach (var pos in coverPos)
+        {
+            var temp = Physics.RaycastAll(opponent.transform.position, (pos - opponent.transform.position).normalized, Vector3.Distance(opponent.transform.position, pos));
+            if ( temp!= null)
+            {
+                return pos;
+            }
         }
+        return default;
 
     }
 

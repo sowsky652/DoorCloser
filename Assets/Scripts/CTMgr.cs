@@ -12,7 +12,6 @@ using static UnityEngine.GraphicsBuffer;
 
 public class CTMgr : MonoBehaviour
 {
-
     Queue<Vector3> destinaition;
     NavMeshAgent agent;
     float agentspeed;
@@ -22,6 +21,7 @@ public class CTMgr : MonoBehaviour
     Vector3 fixlastpos;
     public GameObject circle;
     public GameObject lastpos;
+    public GameObject arrow;
     private Shooter shooter;
     private bool arrived = true;
     Vector3 curDestination;
@@ -64,6 +64,7 @@ public class CTMgr : MonoBehaviour
 
     void Update()
     {
+        
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (GameManager.instance.IsStop())
@@ -93,11 +94,10 @@ public class CTMgr : MonoBehaviour
         agent.enabled = true;
         if (curDestination != null)
             agent.SetDestination(curDestination);
-
     }
+
     public void Stop()
     {
-
         animator.SetFloat("Speed", 0);
         agent.enabled = false;
     }
@@ -243,6 +243,8 @@ public class CTMgr : MonoBehaviour
         {
             var dir = (mousepos - transform.position).magnitude;
             transform.LookAt(new Vector3(mousepos.x,transform.position.y+0.1f, mousepos.z));
+            arrow.SetActive(true);
+
         }
     }
 
@@ -266,10 +268,7 @@ public class CTMgr : MonoBehaviour
         var temp = Instantiate(order, meshpoint, Quaternion.identity);
         temp.ct = this;
         selectedOrder = temp;
-    }
-
-   
-
+    }    
 
     public bool DistanceFromLastdestinaition(Vector3 mousepos)
     {

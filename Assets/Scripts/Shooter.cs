@@ -134,6 +134,7 @@ public class Shooter : MonoBehaviour
         }
 
         gunList[curGun].mag[gunList[curGun].curmag] -= 1;
+        GameManager.instance.MakeNoise(gameObject, 10);
         muzzleFlash.Play();
         var temp = GameManager.instance.GetBullet();
         temp.SetDamage(gunList[curGun].gun.damage);
@@ -143,7 +144,6 @@ public class Shooter : MonoBehaviour
         temp.transform.rotation =muzzlePos.transform.rotation;
         temp.transform.Rotate(new Vector3(x, y, 0));
         temp.transform.gameObject.GetComponent<Rigidbody>().AddForce(temp.transform.forward * 40, ForceMode.Impulse);
-        Debug.Log($"{temp.transform.rotation}");
         temp.Owner = transform.gameObject;
     }
 

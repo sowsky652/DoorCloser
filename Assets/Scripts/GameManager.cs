@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
     public Bullet bulletPrefab;
     private IObjectPool<Bullet> bullet;
 
-
     Bullet InstantiateObject()
     {
         Bullet temp = Instantiate(bulletPrefab);
@@ -111,13 +110,35 @@ public class GameManager : MonoBehaviour
 
         }
 
-        if (Input.GetAxis("Mouse ScrollWheel") > 0)
+        if (Input.GetMouseButton(2))
         {
-            Camera.main.fieldOfView -= 1;
+            if(Input.GetAxis("Mouse Y") > 0)
+            {
+                Camera.main.transform.position=new Vector3(Camera.main.transform.position.x,Camera.main.transform.position.y,Camera.main.transform.position.z-0.2f);
+            }else if(Input.GetAxis("Mouse Y") < 0)
+            {
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z+0.2f);
+
+            }
+            if (Input.GetAxis("Mouse X") > 0)
+            {
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x-0.2f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+            }
+            else if (Input.GetAxis("Mouse X") < 0)
+            {
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x+0.2f, Camera.main.transform.position.y, Camera.main.transform.position.z );
+
+            }
+
         }
-        else if (Input.GetAxis("Mouse ScrollWheel") < 0)
+
+        if (Camera.main.orthographicSize>=6&& Input.GetAxis("Mouse ScrollWheel") > 0)
         {
-            Camera.main.fieldOfView += 1;
+            Camera.main.orthographicSize -= Time.deltaTime*5;
+        }
+        else if (Camera.main.orthographicSize <=10 && Input.GetAxis("Mouse ScrollWheel") < 0)
+        {
+            Camera.main.orthographicSize += Time.deltaTime * 5;
         }
     }
 }

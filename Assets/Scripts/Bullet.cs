@@ -10,7 +10,7 @@ public class Bullet : MonoBehaviour
     private IObjectPool<Bullet> objectPool;
     private int dmg;
     Vector3 lastpos;
-
+    
     public GameObject Owner { set; get; }
 
     public void SetDamage(int damage)
