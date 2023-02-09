@@ -120,6 +120,15 @@ public class CTMgr : MonoBehaviour
             //line.GetComponent<MeshCollider>().isTrigger = true;
         }
     }
+
+    public void Dead()
+    {
+        if (line != null)
+        {
+            Destroy(line);
+        }
+        ClearOrder();
+    }
    
     public void EditPath(Vector3 mousepos)
     {

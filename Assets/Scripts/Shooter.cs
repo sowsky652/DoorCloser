@@ -46,7 +46,12 @@ public class Shooter : MonoBehaviour
     {
         if (hp <= 0)
         {
-            Debug.Log($"{gameObject.name} dead");
+            
+            if (var temp= transform.GetComponent<CTMgr>() != null)
+            {
+                
+            }
+           
             Destroy(gameObject);
         }
         if (attackTarget == null)
