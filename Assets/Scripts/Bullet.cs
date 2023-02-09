@@ -26,13 +26,13 @@ public class Bullet : MonoBehaviour
         GameManager.instance.MakeNoise(Owner,20);
     }
 
-    private void OnDrawGizmos()
-    {
-        Handles.color = Color.green;
+    //private void OnDrawGizmos()
+    //{
+    //    Handles.color = Color.green;
 
-        Handles.DrawLine(lastpos, transform.position);
+    //    Handles.DrawLine(lastpos, transform.position);
 
-    }
+    //}
 
     private void FixedUpdate()
     {

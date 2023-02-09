@@ -221,24 +221,24 @@ public class Vision : MonoBehaviour
         DrawFieldOfView();
     }
 
-    private void OnDrawGizmos()
-    {
+    //private void OnDrawGizmos()
+    //{
 
-        Handles.color = Color.white;
-        Handles.DrawWireArc(transform.position, Vector3.up, Vector3.forward, 360, viewRadius);
-        Vector3 viewAngleA = DirFromAngle(-viewAngle / 2, false);
-        Vector3 viewAngleB = DirFromAngle(viewAngle / 2, false);
+    //    Handles.color = Color.white;
+    //    Handles.DrawWireArc(transform.position, Vector3.up, Vector3.forward, 360, viewRadius);
+    //    Vector3 viewAngleA = DirFromAngle(-viewAngle / 2, false);
+    //    Vector3 viewAngleB = DirFromAngle(viewAngle / 2, false);
 
-        Handles.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
-        Handles.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
+    //    Handles.DrawLine(transform.position, transform.position + viewAngleA * viewRadius);
+    //    Handles.DrawLine(transform.position, transform.position + viewAngleB * viewRadius);
 
-        Handles.color = Color.red;
-        foreach (Transform visible in visibleTargets)
-        {
-            if (visible != null)
-                Handles.DrawLine(transform.position, visible.transform.position);
-        }
-    }
+    //    Handles.color = Color.red;
+    //    foreach (Transform visible in visibleTargets)
+    //    {
+    //        if (visible != null)
+    //            Handles.DrawLine(transform.position, visible.transform.position);
+    //    }
+    //}
 
     public void OnTriggerEnter(Collider other)
     {

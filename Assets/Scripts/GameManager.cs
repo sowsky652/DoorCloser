@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.VersionControl;
+//using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class GameManager : MonoBehaviour
     delegate void pause();
     public Bullet bulletPrefab;
     private IObjectPool<Bullet> bullet;
-
+    public GameObject show;
     Bullet InstantiateObject()
     {
         Bullet temp = Instantiate(bulletPrefab);
@@ -100,6 +101,15 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            show.SetActive(!show.active);
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(0);
+        }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
