@@ -14,6 +14,53 @@ public class GameManager : MonoBehaviour
     public Bullet bulletPrefab;
     private IObjectPool<Bullet> bullet;
     public GameObject show;
+    private List<CTMgr> ct=new List<CTMgr>();
+    private List<Bullet> bullets = new List<Bullet>();
+    private List<EnemyMgr> enemis = new List<EnemyMgr>();
+
+    public void CtAdd(CTMgr addct)
+    {
+        Debug.Log("ctadd");
+        ct.Add(addct);
+    }
+
+    public void CtRemove(CTMgr removect)
+    {
+        Debug.Log("ctremove");
+
+        foreach (var ctemp in ct)
+        {
+            if (ctemp == removect)
+            {
+                ct.Remove(ctemp);
+                break;
+            }
+        }
+    }
+
+    private void Pause()
+    {
+        foreach (var ctemp in ct)
+        {
+            ctemp.Stop();
+        }
+        foreach (var etemp in enemis)
+        {
+
+        }
+    }
+
+    private void Resume()
+    {
+        Debug.Log("Resume");
+        foreach (var ctemp in ct)
+        {
+            ctemp.Resume();
+        }
+        
+    }
+
+
     Bullet InstantiateObject()
     {
         Bullet temp = Instantiate(bulletPrefab);
@@ -53,7 +100,6 @@ public class GameManager : MonoBehaviour
     }
 
 
-
     public void GameStop(bool value)
     {
         Stop = value;
@@ -87,7 +133,7 @@ public class GameManager : MonoBehaviour
                 if (coll.GetComponent<Shooter>().Status == Status.Idle)
                 {
                     coll.transform.LookAt(noiseMaker.transform.position);
-                    coll.GetComponent<Shooter>().Status = Status.Fight;  
+                    coll.GetComponent<Shooter>().Status = Status.Fight;
                 }
             }
         }
@@ -117,36 +163,55 @@ public class GameManager : MonoBehaviour
                 BroadcastMessage("Stop", SendMessageOptions.DontRequireReceiver);
             else
                 BroadcastMessage("Resume", SendMessageOptions.DontRequireReceiver);
-
         }
 
         if (Input.GetMouseButton(2))
         {
-            if(Input.GetAxis("Mouse Y") > 0)
+            if (Input.GetAxis("Mouse Y") > 0)
             {
-                Camera.main.transform.position=new Vector3(Camera.main.transform.position.x,Camera.main.transform.position.y,Camera.main.transform.position.z-0.2f);
-            }else if(Input.GetAxis("Mouse Y") < 0)
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z - 0.2f);
+            }
+            else if (Input.GetAxis("Mouse Y") < 0)
             {
-                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z+0.2f);
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, Camera.main.transform.position.z + 0.2f);
 
             }
             if (Input.GetAxis("Mouse X") > 0)
             {
-                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x-0.2f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x - 0.2f, Camera.main.transform.position.y, Camera.main.transform.position.z);
             }
             else if (Input.GetAxis("Mouse X") < 0)
             {
-                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x+0.2f, Camera.main.transform.position.y, Camera.main.transform.position.z );
+                Camera.main.transform.position = new Vector3(Camera.main.transform.position.x + 0.2f, Camera.main.transform.position.y, Camera.main.transform.position.z);
 
             }
 
         }
 
-        if (Camera.main.orthographicSize>=6&& Input.GetAxis("Mouse ScrollWheel") > 0)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            Camera.main.orthographicSize -= Time.deltaTime*5;
+            if (Stop)
+            {
+                Time.timeScale = 1f;
+                Stop = false;
+                //Resume();
+            }
+            else
+            {
+                Time.timeScale = 0f;
+
+                Stop = true;
+
+                //Pause();
+            }
         }
-        else if (Camera.main.orthographicSize <=10 && Input.GetAxis("Mouse ScrollWheel") < 0)
+
+
+        if (Camera.main.orthographicSize >= 6 && Input.GetAxis("Mouse ScrollWheel") > 0)
+        {
+            Camera.main.orthographicSize -= Time.deltaTime * 5;
+        }
+        else if (Camera.main.orthographicSize <= 10 && Input.GetAxis("Mouse ScrollWheel") < 0)
         {
             Camera.main.orthographicSize += Time.deltaTime * 5;
         }

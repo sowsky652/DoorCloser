@@ -36,6 +36,7 @@ public class Bullet : MonoBehaviour
 
     private void FixedUpdate()
     {
+        
         if (Owner == null)
         {
 
@@ -47,7 +48,8 @@ public class Bullet : MonoBehaviour
         
         if (Physics.Raycast(lastpos, dir, out hit, Vector3.Distance(lastpos,transform.position)))
         {
-            if (hit.collider.gameObject.tag == "Enemy" || hit.collider.gameObject.tag == "Player" || hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+            if (hit.collider.gameObject.tag == "Enemy" || hit.collider.gameObject.tag == "Player" 
+                || hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
             {
                 if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
                 {
@@ -56,10 +58,7 @@ public class Bullet : MonoBehaviour
                 }
                 if (hit.transform.GetComponent<Shooter>() != null &&
                 hit.transform.tag != Owner.tag)
-                {
-                    Debug.Log($"hit:{hit.collider.tag}");
-                    Debug.Log($"owner:{Owner.tag}");
-                    Debug.Log("\n");
+                {                  
                     hit.transform.GetComponent<Shooter>().OnDamage(dmg);
                     objectPool.Release(this);
 

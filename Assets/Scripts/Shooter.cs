@@ -44,12 +44,15 @@ public class Shooter : MonoBehaviour
     }
     private void Update()
     {
+        if (GameManager.instance.IsStop())
+            return;
         if (hp <= 0)
         {
             
-            if (var temp= transform.GetComponent<CTMgr>() != null)
+            if (transform.GetComponent<CTMgr>() != null)
             {
-                
+                var CTM=transform.GetComponent<CTMgr>();
+                CTM.Dead();
             }
            
             Destroy(gameObject);

@@ -138,7 +138,7 @@ public class Vision : MonoBehaviour
     void LookingforCover()
     {
         Collider[] colls = Physics.OverlapSphere(transform.position, 5);
-        List<Cover> coverlist=new List<Cover>();
+        List<Cover> coverlist = new List<Cover>();
         foreach (Collider coll in colls)
         {
             if (coll.GetComponent<Cover>() != null)
@@ -146,20 +146,22 @@ public class Vision : MonoBehaviour
                 coverlist.Add(coll.gameObject.GetComponent<Cover>());
             }
         }
-        if(coverlist.Count == 0) {
+        if (coverlist.Count == 0)
+        {
             return;
         }
-        Cover nearCover=coverlist[0];
+        Cover nearCover = coverlist[0];
 
-        foreach (Cover cover in coverlist) { 
-           if(Vector3.Distance(transform.position,nearCover.transform.position)> Vector3.Distance(transform.position, cover.transform.position))
+        foreach (Cover cover in coverlist)
+        {
+            if (Vector3.Distance(transform.position, nearCover.transform.position) > Vector3.Distance(transform.position, cover.transform.position))
             {
                 nearCover = cover;
             }
         }
 
         transform.GetComponent<NavMeshAgent>().SetDestination(nearCover.FindCover(shooter.attackTarget));
-    }      
+    }
 
     void DrawFieldOfView()
     {
@@ -202,8 +204,10 @@ public class Vision : MonoBehaviour
         StartCoroutine(FindTargetsWithDelay(0.2f));
         shooter = GetComponent<Shooter>();
         viewMesh = new Mesh();
+
         viewMesh.name = "View Mesh";
-        viewMeshFilter.mesh = viewMesh;
+        if (viewMeshFilter != null)
+            viewMeshFilter.mesh = viewMesh;
 
     }
 

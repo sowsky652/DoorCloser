@@ -26,8 +26,8 @@ public class CTMgr : MonoBehaviour
     private bool arrived = true;
     Vector3 curDestination;
     private bool isEditing = false;
-  
-    public bool Roatating { set; get; }  
+
+    public bool Roatating { set; get; }
 
     private Order selectedOrder;
     Animator animator;
@@ -41,16 +41,16 @@ public class CTMgr : MonoBehaviour
         line.GetComponent<ObjectPath>().ct = this;
         agent = GetComponent<NavMeshAgent>();
         destinaition = new Queue<Vector3>();
-       
-        agentspeed = agent.speed;       
+
+        agentspeed = agent.speed;
 
         animator = GetComponentInChildren<Animator>();
 
         shooter = GetComponent<Shooter>();
+        GameManager.instance.CtAdd(this);
+    } 
 
-    }
 
-    
     public Vector3 DirFromAngle(float angleDegrees, bool angleIsGlobal)
     {
         if (!angleIsGlobal)
@@ -64,35 +64,22 @@ public class CTMgr : MonoBehaviour
 
     void Update()
     {
-        
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (GameManager.instance.IsStop())
-            {
-                Resume();
-                GameManager.instance.GameStop(false);
-            }
-            else
-            {
-                Stop();
-                GameManager.instance.GameStop(true);
 
-            }
-
-        }
-        Move();
+       // if (!GameManager.instance.IsStop())
+            Move();
         MakelineMesh();
+        
 
     }
 
-   
+
     public void Resume()
     {
-        animator.SetFloat("Speed", 1);
+        // animator.SetFloat("Speed", 1);
         SetRotate(bookedrot);
         bookedrot = default;
         agent.enabled = true;
-        if (curDestination != null)
+        if (curDestination != default)
             agent.SetDestination(curDestination);
     }
 
@@ -128,8 +115,9 @@ public class CTMgr : MonoBehaviour
             Destroy(line);
         }
         ClearOrder();
+        GameManager.instance.CtRemove(this);
     }
-   
+
     public void EditPath(Vector3 mousepos)
     {
         Vector3 near;
@@ -178,7 +166,6 @@ public class CTMgr : MonoBehaviour
     }
 
 
-   
     public void Resetorder()
     {
         //   orders.Clear();
@@ -221,6 +208,8 @@ public class CTMgr : MonoBehaviour
             agent.SetDestination(curDestination);
             arrived = false;
             animator.SetBool("isRunning", true);
+            animator.SetLayerWeight(1, 1);
+
         }
         else if (Vector3.Distance(curDestination, transform.position) < 1f)
         {
@@ -238,6 +227,7 @@ public class CTMgr : MonoBehaviour
             lastpos.SetActive(false);
             animator.SetBool("isRunning", false);
             animator.SetFloat("Speed", 0);
+            animator.SetLayerWeight(1, 0);
         }
         else
         {
@@ -251,7 +241,7 @@ public class CTMgr : MonoBehaviour
         if (Roatating && Vector3.Distance(mousepos, transform.position) > 2f)
         {
             var dir = (mousepos - transform.position).magnitude;
-            transform.LookAt(new Vector3(mousepos.x,transform.position.y+0.1f, mousepos.z));
+            transform.LookAt(new Vector3(mousepos.x, transform.position.y + 0.1f, mousepos.z));
             arrow.SetActive(true);
 
         }
@@ -277,7 +267,7 @@ public class CTMgr : MonoBehaviour
         var temp = Instantiate(order, meshpoint, Quaternion.identity);
         temp.ct = this;
         selectedOrder = temp;
-    }    
+    }
 
     public bool DistanceFromLastdestinaition(Vector3 mousepos)
     {
@@ -302,7 +292,6 @@ public class CTMgr : MonoBehaviour
     {
         OnPoint();
         isEditing = true;
-       
 
     }
 
@@ -334,7 +323,7 @@ public class CTMgr : MonoBehaviour
 
         if (other.gameObject.name == "Path(Clone)" && other.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
             return;
-        if (other.gameObject.GetComponent<Order>()!=null&&other.gameObject.GetComponent<Order>().ct == this)
+        if (other.gameObject.GetComponent<Order>() != null && other.gameObject.GetComponent<Order>().ct == this)
         {
             var temp = other.gameObject.GetComponent<Order>();
             if (temp.reload)
@@ -344,7 +333,7 @@ public class CTMgr : MonoBehaviour
             if (temp.rot != default)
             {
                 transform.LookAt(temp.rot);
-               
+
             }
             if (temp.flash)
             {

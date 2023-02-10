@@ -14,6 +14,9 @@ public class CTControll : MonoBehaviour
     private bool rotdrag;
     private Vector3 tempPos;
     private bool orderrot = false;
+
+    private float rotateTime=0f;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -31,8 +34,11 @@ public class CTControll : MonoBehaviour
 
         obj.GetComponent<RectTransform>().localScale = Vector3.one;
 
+
+
         clikedplayer = obj.transform.parent.gameObject.transform.parent.gameObject.GetComponent<CTMgr>();
         clikedplayer.OnClick();
+
     }
 
 
@@ -118,58 +124,58 @@ public class CTControll : MonoBehaviour
             }
 
             /////////////////////////////rightclick
-            if (Input.GetMouseButton(1))
-            {
-                if (Input.GetMouseButtonDown(1))
-                {
-                    if (hit.collider.transform.tag == "Player")
-                    {
+            //if (Input.GetMouseButton(1))
+            //{
+            //    if (Input.GetMouseButtonDown(1))
+            //    {
+            //        if (hit.collider.transform.tag == "Player")
+            //        {
 
-                        if (clikedplayer != null)
-                        {
-                            clikedplayer.ClickDisable();
-                        }
-                        clikedplayer = hit.collider.transform.GetComponent<CTMgr>();
-                        clikedplayer.OnClick();
-                        clikedplayer.Roatating = true;
-                        rotdrag = true;
-                    }
-                    else if (hit.collider.transform.tag == "Path")
-                    {
-                        if (hit.collider.transform.tag == "Path")
-                        {
+            //            if (clikedplayer != null)
+            //            {
+            //                clikedplayer.ClickDisable();
+            //            }
+            //            clikedplayer = hit.collider.transform.GetComponent<CTMgr>();
+            //            clikedplayer.OnClick();
+            //            clikedplayer.Roatating = true;
+            //            rotdrag = true;
+            //        }
+            //        else if (hit.collider.transform.tag == "Path")
+            //        {
+            //            if (hit.collider.transform.tag == "Path")
+            //            {
 
-                            if (clikedplayer != null)
-                                clikedplayer.MakeOrder(hit.point);
-                        }
-                        tempPos = hit.point;
-                        orderrot = true;
-                    }
+            //                if (clikedplayer != null)
+            //                    clikedplayer.MakeOrder(hit.point);
+            //            }
+            //            tempPos = hit.point;
+            //            orderrot = true;
+            //        }
 
-                }
-                if (rotdrag)
-                {
-                    if (clikedplayer != null)
-                        clikedplayer.SetRotate(hit.point);
-                }
-            }
-            if (Input.GetMouseButtonUp(1))
-            {
+            //    }
+            //    if (rotdrag)
+            //    {
+            //        if (clikedplayer != null)
+            //            clikedplayer.SetRotate(hit.point);
+            //    }
+            //}
+            //if (Input.GetMouseButtonUp(1))
+            //{
 
-                if (hit.collider.transform.tag == "Order")
-                {
-                    hit.collider.transform.GetComponent<Order>().transform.Find("OrderMenu").gameObject.SetActive(true);
-                }
-                else if (orderrot&&hit.collider.transform.tag == "Floor")
-                {
-                    if (clikedplayer != null)
-                        clikedplayer.MakeOrder(tempPos);
-                    clikedplayer.AddRotateOnPath(hit.point);
-                    tempPos = default;
-                    orderrot= false;
-                }
-                rotdrag = false;
-            }
+            //    if (hit.collider.transform.tag == "Order")
+            //    {
+            //        hit.collider.transform.GetComponent<Order>().transform.Find("OrderMenu").gameObject.SetActive(true);
+            //    }
+            //    else if (orderrot && hit.collider.transform.tag == "Floor")
+            //    {
+            //        if (clikedplayer != null)
+            //            clikedplayer.MakeOrder(tempPos);
+            //        clikedplayer.AddRotateOnPath(hit.point);
+            //        tempPos = default;
+            //        orderrot = false;
+            //    }
+            //    rotdrag = false;
+            //}
         }
 
     }

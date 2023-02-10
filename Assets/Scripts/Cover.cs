@@ -7,10 +7,7 @@ public class Cover : MonoBehaviour
 {       
     Bounds bounds;
     List<Vector3> coverPos=new List<Vector3>();
-    Vector3 left;
-    Vector3 right;
-    Vector3 upper;
-    Vector3 lower;
+   
 
     private void Start()
     {
