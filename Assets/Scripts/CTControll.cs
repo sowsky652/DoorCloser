@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-//using UnityEditor.Timeline;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -13,14 +12,19 @@ public class CTControll : MonoBehaviour
     private bool drag;
     private bool rotdrag;
     private Vector3 tempPos;
-    private bool orderrot = false;
+    private bool rotating = false;
+    private bool playerclick = false;
+    private bool pathclick = false;
 
-    private float rotateTime=0f;
-    
+    private float clikedTime = 0f;
+
+    Vector2 prevtouch;
+
     // Start is called before the first frame update
     void Start()
     {
     }
+
     public void IncreasePath(GameObject obj)
     {
         if (Input.GetMouseButton(1))
@@ -34,8 +38,6 @@ public class CTControll : MonoBehaviour
 
         obj.GetComponent<RectTransform>().localScale = Vector3.one;
 
-
-
         clikedplayer = obj.transform.parent.gameObject.transform.parent.gameObject.GetComponent<CTMgr>();
         clikedplayer.OnClick();
 
@@ -46,63 +48,98 @@ public class CTControll : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-
-        if (Physics.Raycast(ray, out hit))
+        if (Input.touchCount == 1)
         {
+            Touch touch = Input.GetTouch(0);
+            ray = Camera.main.ScreenPointToRay(touch.position);
 
-            if (clikedplayer != null && (!drag))
+            if (Physics.Raycast(ray, out hit))
             {
-                if (hit.collider.GetComponent<CTMgr>() != null && hit.collider.GetComponent<CTMgr>() != clikedplayer)
+
+                //if (clikedplayer != null && (!drag))
+                //{
+                //    if (hit.collider.GetComponent<CTMgr>() != null && hit.collider.GetComponent<CTMgr>() != clikedplayer)
+                //    {
+                //        clikedplayer.ClickDisable();
+                //        clikedplayer = null;
+                //    }
+                //}
+                //else if (clikedplayer == null && (hit.collider.transform.tag == "Player" || hit.collider.transform.tag == "Path"))
+                //{
+                //    if (hit.collider.transform.tag == "Player")
+                //        clikedplayer = hit.collider.transform.GetComponent<CTMgr>();
+                //    else if (hit.collider.transform.tag == "Path")
+                //        clikedplayer = hit.collider.transform.GetComponent<ObjectPath>().ct;
+                //    //else if(hit.collider.transform.tag == "LastPos")
+                //    //    clikedplayer = hit.collider.transform.parent.gameObject.transform.parent.gameObject.GetComponent<CTMgr>(); 
+                //    clikedplayer.OnPoint();
+                //}
+
+                ////////////////////////////////////////////////////Leftclick
+
+
+                if (clikedplayer == null && hit.collider.transform.tag == "Player")
                 {
-                    clikedplayer.ClickDisable();
-                    clikedplayer = null;
-                }
-            }
-            else if (clikedplayer == null && (hit.collider.transform.tag == "Player" || hit.collider.transform.tag == "Path"))
-            {
-                if (hit.collider.transform.tag == "Player")
                     clikedplayer = hit.collider.transform.GetComponent<CTMgr>();
-                else if (hit.collider.transform.tag == "Path")
-                    clikedplayer = hit.collider.transform.GetComponent<ObjectPath>().ct;
-                //else if(hit.collider.transform.tag == "LastPos")
-                //    clikedplayer = hit.collider.transform.parent.gameObject.transform.parent.gameObject.GetComponent<CTMgr>(); 
-                clikedplayer.OnPoint();
-            }
-
-            ////////////////////////////////////////////////////Leftclick
-            if (Input.GetMouseButton(0))
-            {
-                if (Input.GetMouseButtonDown(0))
+                    clikedplayer.Resetorder();
+                    clikedplayer.ClearOrder();
+                    clikedplayer.OnClick();
+                    playerclick = true;
+                    prevtouch = touch.position;
+                }
+                else if (clikedplayer == null && hit.collider.transform.tag == "Path")
                 {
-                    if (hit.collider.transform.tag == "Player")
+                    clikedplayer = hit.collider.transform.GetComponent<ObjectPath>().ct;
+                    clikedplayer.OnClick();
+                    clikedplayer.EditPath(hit.point);
+                    pathclick = true;
+                    prevtouch = touch.position;
+
+                }
+
+                if (prevtouch != touch.position)
+                {
+                    if (playerclick)
+                        drag = true;        
+                        
+                }
+                else if (prevtouch == touch.position)
+                {
+                    clikedTime += Time.deltaTime;
+                    if (clikedTime >= 0.6f)
                     {
-                        if (clikedplayer != null)
-                        {
-                            clikedplayer.ClickDisable();
-                        }
-                        clikedplayer = hit.collider.transform.GetComponent<CTMgr>();
-                        clikedplayer.Resetorder();
-                        clikedplayer.ClearOrder();
-                        clikedplayer.OnClick();
-                        drag = true;
-                    }
-                    else if (hit.collider.transform.tag == "Path")
-                    {
-                        if (clikedplayer != null)
-                        {
-                            clikedplayer.ClickDisable();
-                        }
-                        clikedplayer = hit.collider.transform.GetComponent<ObjectPath>().ct;
-                        clikedplayer.OnClick();
-                        clikedplayer.EditPath(hit.point);
-                        drag = true;
+                        rotating = true;
                     }
                 }
-                if (drag)
+
+                //if (playerclick && (Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0))
+                //{
+                //    clikedTime += Time.deltaTime;
+                //    if (clikedTime >= 0.6f)
+                //    {
+                //        rotating = true;
+
+                //    }
+                //}
+                //else if (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
+                //{
+                //    drag = true;
+                //    clikedTime = 0;
+                //}
+
+                if (rotating)
                 {
-                    if (Physics.Raycast(ray, out hit) && hit.collider.gameObject.CompareTag("Floor"))
+                    if (hit.collider.gameObject.CompareTag("Floor"))
+                    {
+                        if (clikedplayer != null)
+                        {
+                            clikedplayer.SetRotate(hit.point);
+                        }
+                    }
+                }
+                else if (drag)
+                {
+                    if (hit.collider.gameObject.CompareTag("Floor"))
                     {
                         if (clikedplayer.DistanceFromLastdestinaition(hit.point))
                         {
@@ -110,9 +147,9 @@ public class CTControll : MonoBehaviour
                         }
                     }
                 }
-
             }
-            if (Input.GetMouseButtonUp(0))
+
+            if (touch.phase == TouchPhase.Ended)
             {
                 if (clikedplayer != null)
                 {
@@ -120,9 +157,12 @@ public class CTControll : MonoBehaviour
                     clikedplayer.ClickDisable();
                     clikedplayer = null;
                 }
-                drag = false;
-            }
 
+                drag = false;
+                rotating = false;
+                pathclick = false;
+                clikedTime = 0;
+            }
             /////////////////////////////rightclick
             //if (Input.GetMouseButton(1))
             //{

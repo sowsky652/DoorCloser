@@ -147,9 +147,8 @@ public class CTMgr : MonoBehaviour
         AddDestination(mousepos);
         lastpos.transform.position = mousepos;
 
-        var array = destinaition.ToArray();
-        line.positionCount = array.Length;
-        line.SetPositions(array);
+        line.positionCount = destinaition.ToArray().Length;
+        line.SetPositions(destinaition.ToArray());
     }
 
     public void ClearOrder()
@@ -213,9 +212,8 @@ public class CTMgr : MonoBehaviour
         }
         else if (Vector3.Distance(curDestination, transform.position) < 1f)
         {
-            var array = destinaition.ToArray();
-            line.positionCount = array.Length;
-            line.SetPositions(array);
+            line.positionCount = destinaition.ToArray().Length;
+            line.SetPositions(destinaition.ToArray());
             arrived = true;
             curDestination = default;
 
@@ -232,17 +230,17 @@ public class CTMgr : MonoBehaviour
         else
         {
             animator.SetFloat("Speed", 1);
-
         }
     }
 
     public void SetRotate(Vector3 mousepos)
     {
-        if (Roatating && Vector3.Distance(mousepos, transform.position) > 2f)
+        if (Vector3.Distance(mousepos, transform.position) > 2f)
         {
             var dir = (mousepos - transform.position).magnitude;
             transform.LookAt(new Vector3(mousepos.x, transform.position.y + 0.1f, mousepos.z));
             arrow.SetActive(true);
+            arrow.transform.LookAt(mousepos);
 
         }
     }
@@ -285,7 +283,8 @@ public class CTMgr : MonoBehaviour
         var pos = new Vector3(mousepos.x, mousepos.y + 0.1f, mousepos.z);
         destinaition.Enqueue(pos);
         lastpos.transform.position = mousepos;
-
+        line.positionCount = destinaition.ToArray().Length;
+        line.SetPositions(destinaition.ToArray());
     }
 
     public void OnClick()

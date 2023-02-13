@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public Bullet bulletPrefab;
     private IObjectPool<Bullet> bullet;
     public GameObject show;
-    private List<CTMgr> ct=new List<CTMgr>();
+    private List<CTMgr> ct = new List<CTMgr>();
     private List<Bullet> bullets = new List<Bullet>();
     private List<EnemyMgr> enemis = new List<EnemyMgr>();
 
@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviour
         {
             ctemp.Resume();
         }
-        
+
     }
 
 
@@ -152,10 +152,7 @@ public class GameManager : MonoBehaviour
             show.SetActive(!show.active);
         }
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            SceneManager.LoadScene(0);
-        }
+  
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -188,23 +185,7 @@ public class GameManager : MonoBehaviour
 
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (Stop)
-            {
-                Time.timeScale = 1f;
-                Stop = false;
-                //Resume();
-            }
-            else
-            {
-                Time.timeScale = 0f;
 
-                Stop = true;
-
-                //Pause();
-            }
-        }
 
 
         if (Camera.main.orthographicSize >= 6 && Input.GetAxis("Mouse ScrollWheel") > 0)
@@ -216,4 +197,31 @@ public class GameManager : MonoBehaviour
             Camera.main.orthographicSize += Time.deltaTime * 5;
         }
     }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void GameStop()
+    {
+
+        if (Stop)
+        {
+            Time.timeScale = 1f;
+            Stop = false;
+            //Resume();
+        }
+        else
+        {
+            Time.timeScale = 0f;
+
+            Stop = true;
+
+            //Pause();
+        }
+
+    }
 }
+
+
