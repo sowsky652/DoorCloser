@@ -13,6 +13,7 @@ public class CTControll : MonoBehaviour
     private bool rotdrag;
     private Vector3 tempPos;
     private bool rotating = false;
+    private bool orderrotate = false;
     private bool playerclick = false;
     private bool pathclick = false;
 
@@ -75,33 +76,36 @@ public class CTControll : MonoBehaviour
 
                 ////////////////////////////////////////////////////Leftclick
 
-
                 if (clikedplayer == null && hit.collider.transform.tag == "Player")
                 {
                     clikedplayer = hit.collider.transform.GetComponent<CTMgr>();
                     clikedplayer.Resetorder();
                     clikedplayer.ClearOrder();
                     clikedplayer.OnClick();
+                    clikedplayer.RotatingValue(0);
+
                     playerclick = true;
                 }
                 else if (clikedplayer == null && hit.collider.transform.tag == "Path")
                 {
                     clikedplayer = hit.collider.transform.GetComponent<ObjectPath>().ct;
                     clikedplayer.OnClick();
-                    clikedplayer.EditPath(hit.point);
+                    clikedplayer.RotatingValue(0);
                     pathclick = true;
+                    playerclick = false;
 
                 }
-
                 if (clikedplayer != null && touch.phase == TouchPhase.Moved)
                 {
-                    drag = true;
+                    clikedplayer.rotateCircle.SetActive(false);
+
                     if (pathclick && !rotating)
                     {
+
                         clikedplayer.EditPath(hit.point);
                         pathclick = false;
 
-                    }             
+                    }
                     else if (rotating)
                     {
                         if (playerclick)
@@ -109,8 +113,12 @@ public class CTControll : MonoBehaviour
                             clikedplayer.SetRotate(hit.point);
                         }
                     }
+                    else if (orderrotate)
+                    {
+                        clikedplayer.GetSelectedOrder().arrow.transform.LookAt(hit.point);
+                    }
 
-                    if (!rotating && hit.collider.gameObject.CompareTag("Floor"))
+                    if (!rotating && hit.collider.gameObject.CompareTag("Floor") && !orderrotate)
                     {
                         if (clikedplayer.DistanceFromLastdestinaition(hit.point))
                         {
@@ -118,17 +126,26 @@ public class CTControll : MonoBehaviour
                         }
                     }
                 }
-                else if (clikedplayer != null && touch.phase != TouchPhase.Moved)
+                else if (clikedplayer != null && touch.phase == TouchPhase.Stationary)
                 {
-                    clikedTime += Time.deltaTime;
-                    clikedplayer.RotatingValue(clikedTime / 0.6f);
-                    if (clikedTime >= 0.6f && playerclick)
+                                       
+                    if (playerclick)
                     {
-                        rotating = true;
+                        clikedTime += Time.deltaTime;
+                        clikedplayer.RotatingValue(clikedTime / 0.6f);
+                        if (clikedTime >= 0.6f)
+                            rotating = true;
                     }
-                    else if (clikedTime >= 0.6 && pathclick)
+                    else if (pathclick)
                     {
-                        clikedplayer.MakeOrder(hit.point);
+                        clikedTime += Time.deltaTime;
+                        clikedplayer.RotatingValue(clikedTime / 0.6f);
+                        if (clikedTime >= 0.6)
+                        {
+                            clikedplayer.MakeOrder(hit.point);
+                            orderrotate = true;
+                            pathclick = false;
+                        }
                     }
 
                 }
@@ -172,7 +189,6 @@ public class CTControll : MonoBehaviour
 
             if (touch.phase == TouchPhase.Ended)
             {
-                Debug.Log("Ended");
                 if (clikedplayer != null)
                 {
                     clikedplayer.MakeLastPos();
@@ -181,10 +197,16 @@ public class CTControll : MonoBehaviour
                     clikedplayer = null;
                 }
 
+                if (orderrotate)
+                {
+                    clikedplayer.GetSelectedOrder().rot = hit.point;
+                }
 
                 drag = false;
                 rotating = false;
                 pathclick = false;
+                orderrotate = false;
+                playerclick = false;
                 clikedTime = 0;
             }
             /////////////////////////////rightclick

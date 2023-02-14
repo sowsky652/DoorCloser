@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Order : MonoBehaviour 
 {
+    public GameObject arrow { get { return arrow; } set { arrow.SetActive(true); } }
     public CTMgr ct { get; set; }
     public bool swap { get; set; }
     public bool reload { get; set; }

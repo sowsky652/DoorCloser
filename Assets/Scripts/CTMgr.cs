@@ -51,6 +51,7 @@ public class CTMgr : MonoBehaviour
         GameManager.instance.CtAdd(this);
     }
 
+    public Order GetSelectedOrder() { return selectedOrder; }
 
     public Vector3 DirFromAngle(float angleDegrees, bool angleIsGlobal)
     {
@@ -95,7 +96,6 @@ public class CTMgr : MonoBehaviour
         if (!rotateCircle.active)
         {
             rotateCircle.SetActive(true);
-            arrow.SetActive(true);
         }
 
         rotateCircle.GetComponent<Slider>().value = value;
@@ -320,7 +320,7 @@ public class CTMgr : MonoBehaviour
         if (lastpos.active)
         {
             lastpos.GetComponent<Image>().color = new Color(1, 1, 1, 0.36f);
-            line.SetWidth(0.1f, 0.1f);
+          //  line.SetWidth(0.1f, 0.1f);
         }
         if (arrow.active)
         {
