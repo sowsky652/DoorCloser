@@ -18,8 +18,6 @@ public class CTControll : MonoBehaviour
 
     private float clikedTime = 0f;
 
-    Vector2 prevtouch;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -85,7 +83,6 @@ public class CTControll : MonoBehaviour
                     clikedplayer.ClearOrder();
                     clikedplayer.OnClick();
                     playerclick = true;
-                    prevtouch = touch.position;
                 }
                 else if (clikedplayer == null && hit.collider.transform.tag == "Path")
                 {
@@ -93,23 +90,47 @@ public class CTControll : MonoBehaviour
                     clikedplayer.OnClick();
                     clikedplayer.EditPath(hit.point);
                     pathclick = true;
-                    prevtouch = touch.position;
 
                 }
 
-                if (prevtouch != touch.position)
+                if (clikedplayer != null && touch.phase == TouchPhase.Moved)
                 {
-                    if (playerclick)
-                        drag = true;        
-                        
+                    drag = true;
+                    if (pathclick && !rotating)
+                    {
+                        clikedplayer.EditPath(hit.point);
+                        pathclick = false;
+
+                    }             
+                    else if (rotating)
+                    {
+                        if (playerclick)
+                        {
+                            clikedplayer.SetRotate(hit.point);
+                        }
+                    }
+
+                    if (!rotating && hit.collider.gameObject.CompareTag("Floor"))
+                    {
+                        if (clikedplayer.DistanceFromLastdestinaition(hit.point))
+                        {
+                            clikedplayer.AddDestination(hit.point);
+                        }
+                    }
                 }
-                else if (prevtouch == touch.position)
+                else if (clikedplayer != null && touch.phase != TouchPhase.Moved)
                 {
                     clikedTime += Time.deltaTime;
-                    if (clikedTime >= 0.6f)
+                    clikedplayer.RotatingValue(clikedTime / 0.6f);
+                    if (clikedTime >= 0.6f && playerclick)
                     {
                         rotating = true;
                     }
+                    else if (clikedTime >= 0.6 && pathclick)
+                    {
+                        clikedplayer.MakeOrder(hit.point);
+                    }
+
                 }
 
                 //if (playerclick && (Input.GetAxis("Mouse X") == 0 && Input.GetAxis("Mouse Y") == 0))
@@ -127,36 +148,39 @@ public class CTControll : MonoBehaviour
                 //    clikedTime = 0;
                 //}
 
-                if (rotating)
-                {
-                    if (hit.collider.gameObject.CompareTag("Floor"))
-                    {
-                        if (clikedplayer != null)
-                        {
-                            clikedplayer.SetRotate(hit.point);
-                        }
-                    }
-                }
-                else if (drag)
-                {
-                    if (hit.collider.gameObject.CompareTag("Floor"))
-                    {
-                        if (clikedplayer.DistanceFromLastdestinaition(hit.point))
-                        {
-                            clikedplayer.AddDestination(hit.point);
-                        }
-                    }
-                }
+                //if (rotating)
+                //{
+                //    if (hit.collider.gameObject.CompareTag("Floor"))
+                //    {
+                //        if (clikedplayer != null)
+                //        {
+                //            clikedplayer.SetRotate(hit.point);
+                //        }
+                //    }
+                //}
+                //else if (drag)
+                //{
+                //    if (hit.collider.gameObject.CompareTag("Floor"))
+                //    {
+                //        if (clikedplayer.DistanceFromLastdestinaition(hit.point))
+                //        {
+                //            clikedplayer.AddDestination(hit.point);
+                //        }
+                //    }
+                //}
             }
 
             if (touch.phase == TouchPhase.Ended)
             {
+                Debug.Log("Ended");
                 if (clikedplayer != null)
                 {
                     clikedplayer.MakeLastPos();
                     clikedplayer.ClickDisable();
+                    clikedplayer.rotateCircle.SetActive(false);
                     clikedplayer = null;
                 }
+
 
                 drag = false;
                 rotating = false;

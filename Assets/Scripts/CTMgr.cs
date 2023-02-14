@@ -20,6 +20,7 @@ public class CTMgr : MonoBehaviour
     LineRenderer line;
     Vector3 fixlastpos;
     public GameObject circle;
+    public GameObject rotateCircle;
     public GameObject lastpos;
     public GameObject arrow;
     private Shooter shooter;
@@ -48,7 +49,7 @@ public class CTMgr : MonoBehaviour
 
         shooter = GetComponent<Shooter>();
         GameManager.instance.CtAdd(this);
-    } 
+    }
 
 
     public Vector3 DirFromAngle(float angleDegrees, bool angleIsGlobal)
@@ -65,10 +66,10 @@ public class CTMgr : MonoBehaviour
     void Update()
     {
 
-       // if (!GameManager.instance.IsStop())
-            Move();
+        // if (!GameManager.instance.IsStop())
+        Move();
         MakelineMesh();
-        
+
 
     }
 
@@ -88,6 +89,19 @@ public class CTMgr : MonoBehaviour
         animator.SetFloat("Speed", 0);
         agent.enabled = false;
     }
+
+    public void RotatingValue(float value)
+    {
+        if (!rotateCircle.active)
+        {
+            rotateCircle.SetActive(true);
+            arrow.SetActive(true);
+        }
+
+        rotateCircle.GetComponent<Slider>().value = value;
+
+    }
+
 
     public void BookedRotation(Vector3 mousepos)
     {
@@ -237,11 +251,9 @@ public class CTMgr : MonoBehaviour
     {
         if (Vector3.Distance(mousepos, transform.position) > 2f)
         {
-            var dir = (mousepos - transform.position).magnitude;
             transform.LookAt(new Vector3(mousepos.x, transform.position.y + 0.1f, mousepos.z));
+          
             arrow.SetActive(true);
-            arrow.transform.LookAt(mousepos);
-
         }
     }
 
@@ -309,6 +321,10 @@ public class CTMgr : MonoBehaviour
         {
             lastpos.GetComponent<Image>().color = new Color(1, 1, 1, 0.36f);
             line.SetWidth(0.1f, 0.1f);
+        }
+        if (arrow.active)
+        {
+            arrow.SetActive(false);
         }
     }
 
